@@ -3,7 +3,7 @@
  * Provides helpers for type checking, graph manipulation, and pattern matching
  */
 
-import type { Soul, Relation, Graph, GraphNode, LexFilter, GraphValue } from "./schemas.ts"
+import type { Soul, Relation, Graph, GraphNode, LexFilter, GraphValue } from "./schemas"
 
 // ============================================================================
 // Number Utilities

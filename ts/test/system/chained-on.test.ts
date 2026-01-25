@@ -1,13 +1,13 @@
 import fs from "fs"
-import { Server} from "mock-socket"
-import { describe, test} from "node:test"
+import { Server } from "mock-socket"
+import { describe, test } from "node:test"
 import assert from "node:assert/strict"
-import Holster from "../../src/holster.ts"
-import type { HolsterAPI } from "../../src/holster.ts"
+import Holster from "../../src/holster"
+import type { HolsterAPI } from "../../src/holster"
 
 describe("system - chained get with on", () => {
   const wss: Server = new Server("ws://localhost:9002")
-  const holster: HolsterAPI = Holster({file: "test/system/chained-on", wss: wss})
+  const holster: HolsterAPI = Holster({ file: "test/system/chained-on", wss: wss })
 
   test("on listener fires with null when no data exists", (t, done) => {
     holster.get("key").on(data => {
@@ -19,7 +19,7 @@ describe("system - chained get with on", () => {
 
   test("put then on listener receives data", (t, done) => {
     // Put data first
-    holster.get("key2").put({value: "test"}, err => {
+    holster.get("key2").put({ value: "test" }, err => {
       assert.equal(err, null)
 
       // Then set up listener - should get the existing data
@@ -34,7 +34,7 @@ describe("system - chained get with on", () => {
   })
 
   test("cleanup", (t, done) => {
-    fs.rm("test/system/chained-on", {recursive: true, force: true}, err => {
+    fs.rm("test/system/chained-on", { recursive: true, force: true }, err => {
       assert.equal(err, null)
       done()
     })

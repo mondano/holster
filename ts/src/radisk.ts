@@ -3,10 +3,10 @@
  * Provides disk-backed radix tree with caching and batching
  */
 
-import Radix from "./radix.ts"
-import type { RadixFunction } from "./schemas.ts"
-import * as utils from "./utils.ts"
-import type { EncodedValue, RadiskOptions, GraphValue, Relation } from "./schemas.ts"
+import Radix from "./radix"
+import type { RadixFunction } from "./schemas"
+import * as utils from "./utils"
+import type { EncodedValue, RadiskOptions, GraphValue, Relation } from "./schemas"
 
 // ASCII character for end of text
 const etx = String.fromCharCode(3)
@@ -19,7 +19,7 @@ export interface RadiskInterface extends RadixFunction {
   // Override call signature to support both get (with callback) and put (with value and optional callback)
   // Accepts GraphValue (raw values) OR EncodedValue (tuples) - see src/radisk.js and tests
   (key?: string, value?: GraphValue | EncodedValue | ((err?: string | null, value?: EncodedValue | Record<string, EncodedValue>) => void), cb?: (err?: string | null) => void): void
-  
+
   batch: RadixFunction & {
     acks: Array<(err?: string | null) => void>
     ed: number
@@ -460,7 +460,7 @@ Radisk.encode = (input: EncodedValue | GraphValue): string => {
   let state = ""
   let sig = ""
   let data: GraphValue
-  
+
   if (Array.isArray(input) && (input.length === 2 || input.length === 3)) {
     // input is EncodedValue - extract the GraphValue and metadata
     state = etx + input[1]

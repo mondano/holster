@@ -1,9 +1,9 @@
 import fs from "fs"
 import { Server } from "mock-socket"
-import {describe, test} from "node:test"
+import { describe, test } from "node:test"
 import assert from "node:assert/strict"
-import Holster from "../src/holster.ts"
-import type { HolsterAPI } from "../src/holster.ts"
+import Holster from "../src/holster"
+import type { HolsterAPI } from "../src/holster"
 
 describe("holster.secure", () => {
   const wss: Server = new Server("ws://localhost:1234")
@@ -185,7 +185,7 @@ describe("holster.secure", () => {
             assert.equal(data, "nested value")
 
             user.get("nested").next("child", data => {
-              assert.deepEqual(data, {has: "child value"})
+              assert.deepEqual(data, { has: "child value" })
               done()
             })
           })
@@ -195,7 +195,7 @@ describe("holster.secure", () => {
   })
 
   test("cleanup", (t, done) => {
-    fs.rm("test/holster.secure", {recursive: true, force: true}, err => {
+    fs.rm("test/holster.secure", { recursive: true, force: true }, err => {
       assert.equal(err, null)
       done()
     })

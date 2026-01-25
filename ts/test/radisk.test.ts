@@ -1,7 +1,7 @@
 import { describe, test } from "node:test"
 import assert from "node:assert/strict"
-import Radisk from "../src/radisk.ts"
-import type { RadiskInterface, RadiskOptions, EncodedValue } from "../src/schemas.ts"
+import Radisk from "../src/radisk"
+import type { RadiskInterface, RadiskOptions, EncodedValue } from "../src/schemas"
 
 describe("radisk", () => {
   const puts: Record<string, string> = {}
@@ -30,7 +30,7 @@ describe("radisk", () => {
 
   test("write and read from memory", (t, done) => {
     radisk("key", "value", () => {
-      assert.deepEqual(puts, {"!": '\x1F+0\x1F#\x1F"key\x1F=\x1F"value\x1F\n'})
+      assert.deepEqual(puts, { "!": '\x1F+0\x1F#\x1F"key\x1F=\x1F"value\x1F\n' })
     })
 
     // Reading after write means radisk.batch is still available.
@@ -65,7 +65,7 @@ describe("radisk", () => {
   })
 
   test("write and read a plain object is undefined", (t, done) => {
-    radisk("key", {object: true})
+    radisk("key", { object: true })
     setTimeout(() => {
       assert.deepEqual(puts, {
         "!": '\x1F+0\x1F#\x1F"key\x1F=undefined\n',
@@ -78,7 +78,7 @@ describe("radisk", () => {
   })
 
   test("write a plain object with state is also undefined", (t, done) => {
-    radisk("key", [{object: true}, 1234])
+    radisk("key", [{ object: true }, 1234])
     setTimeout(() => {
       assert.deepEqual(puts, {
         "!": '\x1F+0\x1F#\x1F"key\x1F=undefined\n',
@@ -91,7 +91,7 @@ describe("radisk", () => {
   })
 
   test("write and read a soul relation is ok", (t, done) => {
-    const rel = {"#": "soul"}
+    const rel = { "#": "soul" }
     radisk("key", rel)
     setTimeout(() => {
       assert.deepEqual(puts, {
@@ -105,7 +105,7 @@ describe("radisk", () => {
   })
 
   test("write and read a soul relation with state is ok", (t, done) => {
-    const rel: [{ "#": string }, number] = [{"#": "soul"}, 1234]
+    const rel: [{ "#": string }, number] = [{ "#": "soul" }, 1234]
     radisk("key", rel)
     setTimeout(() => {
       assert.deepEqual(puts, {

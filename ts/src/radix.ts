@@ -3,8 +3,8 @@
  * Supports prefix-based key compression
  */
 
-import * as utils from "./utils.ts"
-import type { EncodedValue, RadixFunction } from "./schemas.ts"
+import * as utils from "./utils"
+import type { EncodedValue, RadixFunction } from "./schemas"
 
 // ASCII character for group separator
 const group = String.fromCharCode(29)
@@ -131,7 +131,7 @@ Radix.map = function map(
     const key = keys[i]!
     const found = tree[key]
     if (!found) continue
-    
+
     const recordValue = found[record]
 
     if (typeof recordValue !== "undefined") {

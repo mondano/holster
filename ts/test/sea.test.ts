@@ -1,7 +1,7 @@
 import { describe, test } from "node:test"
 import assert from "node:assert/strict"
-import SEA from "../src/sea.ts"
-import type { UserPair, EncryptedData, SignedData } from "../src/schemas.ts"
+import SEA from "../src/sea"
+import type { UserPair, EncryptedData, SignedData } from "../src/schemas"
 
 // The JWK format uses "base64url" encoding, which means "+" replaced with "-"
 // and "/" with "_" and removing "=" padding. So public and private keys here
@@ -13,7 +13,7 @@ const privRegex = /^(\w|-)+$/
 
 describe("SEA", () => {
   test("pair await", (t, done) => {
-    ;(async (): Promise<void> => {
+    ; (async (): Promise<void> => {
       const pair: UserPair = await SEA.pair()
       assert.match(pair.pub, pubRegex)
       assert.match(pair.priv, privRegex)
@@ -34,7 +34,7 @@ describe("SEA", () => {
   })
 
   test("encrypt and decrypt string await", (t, done) => {
-    ;(async (): Promise<void> => {
+    ; (async (): Promise<void> => {
       const pair: UserPair = await SEA.pair()
       const enc = await SEA.encrypt("hello self", pair)
       assert.notEqual(enc, null)
@@ -45,7 +45,7 @@ describe("SEA", () => {
   })
 
   test("encrypt and decrypt with wrong key", (t, done) => {
-    ;(async (): Promise<void> => {
+    ; (async (): Promise<void> => {
       const alice: UserPair = await SEA.pair()
       const bob: UserPair = await SEA.pair()
       const enc = await SEA.encrypt("alice secret", alice)
@@ -67,7 +67,7 @@ describe("SEA", () => {
   })
 
   test("encrypt and decrypt object await", (t, done) => {
-    ;(async (): Promise<void> => {
+    ; (async (): Promise<void> => {
       const pair: UserPair = await SEA.pair()
       const enc = await SEA.encrypt({ test: "hello self" }, pair)
       const dec = await SEA.decrypt(enc!, pair)
@@ -88,7 +88,7 @@ describe("SEA", () => {
   })
 
   test("sign and verify string await", (t, done) => {
-    ;(async (): Promise<void> => {
+    ; (async (): Promise<void> => {
       const pair: UserPair = await SEA.pair()
       const signed = await SEA.sign("hello self", pair)
       assert.notEqual(signed, null)
@@ -99,7 +99,7 @@ describe("SEA", () => {
   })
 
   test("sign and verify with wrong key", (t, done) => {
-    ;(async (): Promise<void> => {
+    ; (async (): Promise<void> => {
       const alice: UserPair = await SEA.pair()
       const bob: UserPair = await SEA.pair()
       const signed = await SEA.sign("signed by alice", alice)
@@ -121,7 +121,7 @@ describe("SEA", () => {
   })
 
   test("sign and verify object await", (t, done) => {
-    ;(async (): Promise<void> => {
+    ; (async (): Promise<void> => {
       const pair: UserPair = await SEA.pair()
       const signed = await SEA.sign({ test: "hello self" }, pair)
       const verified = await SEA.verify(signed!, pair)
@@ -153,7 +153,7 @@ describe("SEA", () => {
   })
 
   test("work with salt encrypt string await", (t, done) => {
-    ;(async (): Promise<void> => {
+    ; (async (): Promise<void> => {
       const work = await SEA.work("hello", "salt")
       const enc = await SEA.encrypt("hello work", work)
       const dec = await SEA.decrypt(enc!, work)
@@ -174,7 +174,7 @@ describe("SEA", () => {
   })
 
   test("work with salt encrypt object await", (t, done) => {
-    ;(async (): Promise<void> => {
+    ; (async (): Promise<void> => {
       const work = await SEA.work("hello", "salt")
       const enc = await SEA.encrypt({ test: "hello work" }, work)
       const dec = await SEA.decrypt(enc!, work)
@@ -195,7 +195,7 @@ describe("SEA", () => {
   })
 
   test("work no salt encrypt string await", (t, done) => {
-    ;(async (): Promise<void> => {
+    ; (async (): Promise<void> => {
       const work = await SEA.work("hello")
       const enc = await SEA.encrypt("hello work", work)
       const dec = await SEA.decrypt(enc!, work)
@@ -216,7 +216,7 @@ describe("SEA", () => {
   })
 
   test("work no salt encrypt object await", (t, done) => {
-    ;(async (): Promise<void> => {
+    ; (async (): Promise<void> => {
       const work = await SEA.work("hello")
       const enc = await SEA.encrypt({ test: "hello work" }, work)
       const dec = await SEA.decrypt(enc!, work)
@@ -243,7 +243,7 @@ describe("SEA", () => {
   })
 
   test("secret string await", (t, done) => {
-    ;(async (): Promise<void> => {
+    ; (async (): Promise<void> => {
       const alice: UserPair = await SEA.pair()
       const bob: UserPair = await SEA.pair()
       const to = await SEA.secret(bob, alice)
@@ -273,7 +273,7 @@ describe("SEA", () => {
   })
 
   test("secret object await", (t, done) => {
-    ;(async (): Promise<void> => {
+    ; (async (): Promise<void> => {
       const alice: UserPair = await SEA.pair()
       const bob: UserPair = await SEA.pair()
       const to = await SEA.secret(bob, alice)

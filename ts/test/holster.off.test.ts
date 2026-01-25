@@ -1,13 +1,13 @@
 import fs from "fs"
 import { Server } from "mock-socket"
-import {describe, test} from "node:test"
+import { describe, test } from "node:test"
 import assert from "node:assert/strict"
-import Holster from "../src/holster.ts"
-import type { HolsterAPI } from "../src/holster.ts"
+import Holster from "../src/holster"
+import type { HolsterAPI } from "../src/holster"
 
 describe("holster.off", () => {
   const wss: Server = new Server("ws://localhost:1234")
-  const holster: HolsterAPI = Holster({file: "test/holster.off", wss: wss, maxAge: 100})
+  const holster: HolsterAPI = Holster({ file: "test/holster.off", wss: wss, maxAge: 100 })
 
   test("calling off without get callback null", (t, done) => {
     holster.off(data => {
@@ -46,7 +46,7 @@ describe("holster.off", () => {
   })
 
   test("cleanup", (t, done) => {
-    fs.rm("test/holster.off", {recursive: true, force: true}, err => {
+    fs.rm("test/holster.off", { recursive: true, force: true }, err => {
       assert.equal(err, null)
       done()
     })

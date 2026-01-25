@@ -1,13 +1,13 @@
 import fs from "fs"
-import { Server} from "mock-socket"
-import { describe, test} from "node:test"
+import { Server } from "mock-socket"
+import { describe, test } from "node:test"
 import assert from "node:assert/strict"
-import Holster from "../../src/holster.ts"
-import type { HolsterAPI } from "../../src/holster.ts"
+import Holster from "../../src/holster"
+import type { HolsterAPI } from "../../src/holster"
 
 describe("system - promise wrapped calls", () => {
   const wss: Server = new Server("ws://localhost:9004")
-  const holster: HolsterAPI = Holster({file: "test/system/promise-wrapper", wss: wss})
+  const holster: HolsterAPI = Holster({ file: "test/system/promise-wrapper", wss: wss })
 
   test("promise wrapped get returns null for missing key", async t => {
     const data = await new Promise(res => {
@@ -18,7 +18,7 @@ describe("system - promise wrapped calls", () => {
 
   test("promise wrapped get returns data for existing key", async t => {
     await new Promise(res => {
-      holster.get("key").put({value: "test"}, res)
+      holster.get("key").put({ value: "test" }, res)
     })
 
     const data = await new Promise(res => {
@@ -38,7 +38,7 @@ describe("system - promise wrapped calls", () => {
   test("cleanup", (t, done) => {
     fs.rm(
       "test/system/promise-wrapper",
-      {recursive: true, force: true},
+      { recursive: true, force: true },
       err => {
         assert.equal(err, null)
         done()

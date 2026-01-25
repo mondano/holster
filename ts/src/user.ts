@@ -3,11 +3,11 @@
  * Provides user creation, authentication, and password management
  */
 
-import * as utils from "./utils.ts"
-import Wire from "./wire.ts"
-import SEA from "./sea.ts"
-import type { UserIdentity, HolsterOptions, LexFilter, WireOptions } from "./schemas.ts"
-import type { HolsterAPI } from "./holster.ts"
+import * as utils from "./utils"
+import Wire from "./wire"
+import SEA from "./sea"
+import type { UserIdentity, HolsterOptions, LexFilter, WireOptions } from "./schemas"
+import type { HolsterAPI } from "./holster"
 
 type WireInterface = ReturnType<typeof Wire>
 

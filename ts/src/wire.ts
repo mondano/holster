@@ -3,11 +3,11 @@
  * Handles message routing, rate limiting, and graph synchronization
  */
 
-import Dup from "./dup.ts"
-import Get from "./get.ts"
-import Ham from "./ham.ts"
-import Store from "./store.ts"
-import * as utils from "./utils.ts"
+import Dup from "./dup"
+import Get from "./get"
+import Ham from "./ham"
+import Store from "./store"
+import * as utils from "./utils"
 import type {
   Graph,
   WireMessage,
@@ -16,7 +16,7 @@ import type {
   ListenMap,
   HolsterOptions,
   GraphValue,
-} from "./schemas.ts"
+} from "./schemas"
 
 // Unified WebSocket type that works for both Node.js ws and browser WebSocket
 type UnifiedWebSocket = WebSocket & {
@@ -532,100 +532,100 @@ const Wire = (opt: HolsterOptions): WireAPI => {
       })
     }
 
-    ;(wss as unknown as { on: (event: string, cb: (ws: UnifiedWebSocket) => void) => void }).on(
-      "connection",
-      (ws: UnifiedWebSocket) => {
-        if (!connectionManager.add(ws)) {
-          console.log("Connection limit reached, rejecting connection")
-          ws.close(1013, "Connection limit reached - try again later")
-          return
-        }
-
-        const clientId = utils.text.random(9)
-        console.log(`New WebSocket client connected: ${clientId}`)
-
-        ws.on?.("error", ((...args: unknown[]) => {
-          const error = args[0] as Error
-          console.log("WebSocket error:", error)
-          connectionManager.remove(ws)
-        }) as (...args: unknown[]) => void)
-
-        ws.on?.("close", (() => {
-          console.log(`WebSocket client disconnected: ${clientId}`)
-          connectionManager.remove(ws)
-        }) as (...args: unknown[]) => void)
-
-        ws.on?.("message", ((...args: unknown[]) => {
-          const data = args[0] as Buffer
-          const isBinary = args[1] as boolean
-          const validation = validateMessage(data, options.maxMessageSize)
-          if (!validation.valid) {
-            console.warn(`Invalid message: ${validation.error}`)
-            ws.send(JSON.stringify({ error: validation.error }))
+      ; (wss as unknown as { on: (event: string, cb: (ws: UnifiedWebSocket) => void) => void }).on(
+        "connection",
+        (ws: UnifiedWebSocket) => {
+          if (!connectionManager.add(ws)) {
+            console.log("Connection limit reached, rejecting connection")
+            ws.close(1013, "Connection limit reached - try again later")
             return
           }
 
-          const parseResult = safeJSONParse(data, options.maxMessageSize)
-          if (!parseResult.success) {
-            console.warn(`JSON parse error: ${parseResult.error}`)
-            ws.send(JSON.stringify({ error: "Invalid JSON" }))
-            return
-          }
+          const clientId = utils.text.random(9)
+          console.log(`New WebSocket client connected: ${clientId}`)
 
-          const msg = parseResult.data!
-          if (!msg["#"]) return // Incoming messages must have '#'
-          if (dup.check(msg["#"])) return
+          ws.on?.("error", ((...args: unknown[]) => {
+            const error = args[0] as Error
+            console.log("WebSocket error:", error)
+            connectionManager.remove(ws)
+          }) as (...args: unknown[]) => void)
 
-          const delay = rateLimiter.getDelay(clientId)
-          if (delay > 0) {
-            const throttleCount = rateLimiter.getThrottleCount(clientId)
-            console.log(
-              `Client ${clientId}: rate limit exceeded, delay would be ${delay}ms, dropping message (throttle count: ${throttleCount})`
-            )
-            if (rateLimiter.shouldDisconnect(clientId)) {
-              console.log(
-                `Client ${clientId}: Disconnecting after ${throttleCount} throttle violations`
-              )
-              ws.close(1008, "Rate limit violations")
+          ws.on?.("close", (() => {
+            console.log(`WebSocket client disconnected: ${clientId}`)
+            connectionManager.remove(ws)
+          }) as (...args: unknown[]) => void)
+
+          ws.on?.("message", ((...args: unknown[]) => {
+            const data = args[0] as Buffer
+            const isBinary = args[1] as boolean
+            const validation = validateMessage(data, options.maxMessageSize)
+            if (!validation.valid) {
+              console.warn(`Invalid message: ${validation.error}`)
+              ws.send(JSON.stringify({ error: validation.error }))
               return
             }
 
-            ws.send(
-              JSON.stringify({
-                "#": dup.track(utils.text.random(9)),
-                "@": msg["#"],
-                err: `Rate limit exceeded. Slow down requests. Wait ${Math.ceil(delay / 1000)}s`,
-                throttle: delay,
-              })
-            )
-            return
-          }
-
-          const processMessage = async (): Promise<void> => {
-            dup.track(msg["#"]!)
-
-            if (msg.get) get(msg as never, send)
-            if (msg.put) await put(msg as never, send)
-            send(data.toString(), isBinary)
-
-            const id = msg["@"]
-            const cb = queue[id!]
-            if (cb) {
-              delete (msg as { "#"?: string })["#"]
-              delete (msg as { "@"?: string })["@"]
-              cb(msg)
-              delete queue[id!]
+            const parseResult = safeJSONParse(data, options.maxMessageSize)
+            if (!parseResult.success) {
+              console.warn(`JSON parse error: ${parseResult.error}`)
+              ws.send(JSON.stringify({ error: "Invalid JSON" }))
+              return
             }
-          }
 
-          if (delay > 0) {
-            setTimeout(processMessage, delay)
-          } else {
-            processMessage()
-          }
-        }) as (...args: unknown[]) => void)
-      }
-    )
+            const msg = parseResult.data!
+            if (!msg["#"]) return // Incoming messages must have '#'
+            if (dup.check(msg["#"])) return
+
+            const delay = rateLimiter.getDelay(clientId)
+            if (delay > 0) {
+              const throttleCount = rateLimiter.getThrottleCount(clientId)
+              console.log(
+                `Client ${clientId}: rate limit exceeded, delay would be ${delay}ms, dropping message (throttle count: ${throttleCount})`
+              )
+              if (rateLimiter.shouldDisconnect(clientId)) {
+                console.log(
+                  `Client ${clientId}: Disconnecting after ${throttleCount} throttle violations`
+                )
+                ws.close(1008, "Rate limit violations")
+                return
+              }
+
+              ws.send(
+                JSON.stringify({
+                  "#": dup.track(utils.text.random(9)),
+                  "@": msg["#"],
+                  err: `Rate limit exceeded. Slow down requests. Wait ${Math.ceil(delay / 1000)}s`,
+                  throttle: delay,
+                })
+              )
+              return
+            }
+
+            const processMessage = async (): Promise<void> => {
+              dup.track(msg["#"]!)
+
+              if (msg.get) get(msg as never, send)
+              if (msg.put) await put(msg as never, send)
+              send(data.toString(), isBinary)
+
+              const id = msg["@"]
+              const cb = queue[id!]
+              if (cb) {
+                delete (msg as { "#"?: string })["#"]
+                delete (msg as { "@"?: string })["@"]
+                cb(msg)
+                delete queue[id!]
+              }
+            }
+
+            if (delay > 0) {
+              setTimeout(processMessage, delay)
+            } else {
+              processMessage()
+            }
+          }) as (...args: unknown[]) => void)
+        }
+      )
     return api(send)
   }
 

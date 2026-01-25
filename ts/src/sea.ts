@@ -3,14 +3,14 @@
  * Cryptographic functions for signing, verification, encryption, and decryption
  */
 
-import { userPublicKey, userSignature } from "./utils.ts"
-import * as utils from "./sea-utils.ts"
-import SafeBuffer from "./buffer.ts"
+import { userPublicKey, userSignature } from "./utils"
+import * as utils from "./sea-utils"
+import SafeBuffer from "./buffer"
 import type {
   UserPair,
   EncryptedData,
   SignedData,
-} from "./schemas.ts"
+} from "./schemas"
 
 type Callback<T> = (result: T) => void
 

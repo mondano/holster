@@ -6,8 +6,8 @@
   "main": "index.js",
   "scripts": {
     "test": "node --test",
-    "test:ts": "node --test ts/test/**/*.test.ts",
-    "test:ts:system": "node --test ts/test/system/**/*.test.ts",
+    "test:ts": "node --test ts/test/**/*.test",
+    "test:ts:system": "node --test ts/test/system/**/*.test",
     "build": "esbuild src/holster.js --bundle --format=esm --sourcemap \"--external:node:*\" \"--external:ws\" --minify --outdir=build",
     "build:ts": "tsc",
     "build:all": "npm run build:ts && npm run build",

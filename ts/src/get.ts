@@ -3,9 +3,9 @@
  * Extracts nodes and properties based on lex queries
  */
 
-import { match, userPublicKey } from "./utils.ts"
-import type { Lex, Graph } from "./schemas.ts"
-import type { GraphNode } from "./schemas.ts"
+import { match, userPublicKey } from "./utils"
+import type { Lex, Graph } from "./schemas"
+import type { GraphNode } from "./schemas"
 
 /**
  * Get data from graph based on lex query

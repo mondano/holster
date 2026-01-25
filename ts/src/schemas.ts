@@ -466,20 +466,20 @@ export type RadixValue = GraphValue | EncodedValue | RadixNode
  */
 export type RadixFunction = {
   // Main call signature: synchronous get/put operations
-  (keys?: string, value?: GraphValue | EncodedValue, tree?: RadixNode): 
+  (keys?: string, value?: GraphValue | EncodedValue, tree?: RadixNode):
     RadixNode | EncodedValue | undefined | Record<string, EncodedValue>
-  
+
   // Callback form: async operations
   (key?: string, value?: RadixValue, cb?: (err?: string) => void): void
-  
+
   // Static map method for iterating over radix tree values
   map: (
-    radix: RadixFunction | RadixNode, 
+    radix: RadixFunction | RadixNode,
     cb: (value: EncodedValue, fullKey: string, key: string, pre: string[]) => unknown,
     opt?: boolean,
     pre?: string[]
   ) => unknown
-  
+
   // Dynamic properties for internal state (e.g., group separator key)
   [key: string]: unknown
 }
@@ -510,10 +510,10 @@ export type Dup = z.infer<typeof DupSchema> & {
 // ============================================================================
 
 // Export RadiskInterface from radisk module for test usage
-export type { RadiskInterface } from "./radisk.ts"
+export type { RadiskInterface } from "./radisk"
 
 // Export other interfaces for test usage
-export type { WireAPI as WireInterface } from "./wire.ts"
-export type { UserInterface } from "./user.ts"
-export type { StoreInterface } from "./store.ts"
+export type { WireAPI as WireInterface } from "./wire"
+export type { UserInterface } from "./user"
+export type { StoreInterface } from "./store"
 

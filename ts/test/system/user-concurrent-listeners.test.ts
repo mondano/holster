@@ -1,9 +1,9 @@
 import fs from "fs"
-import { Server} from "mock-socket"
-import { describe, test} from "node:test"
+import { Server } from "mock-socket"
+import { describe, test } from "node:test"
 import assert from "node:assert/strict"
-import Holster from "../../src/holster.ts"
-import type { HolsterAPI } from "../../src/holster.ts"
+import Holster from "../../src/holster"
+import type { HolsterAPI } from "../../src/holster"
 
 describe("system - user concurrent listeners", () => {
   const wss: Server = new Server("ws://localhost:9015")
@@ -28,21 +28,21 @@ describe("system - user concurrent listeners", () => {
     let listener1Called = false
     let listener2Called = false
 
-    user.get("key").put({value: "test"}, err => {
+    user.get("key").put({ value: "test" }, err => {
       assert.equal(err, null)
 
       // Set up two listeners on the same path
       user.get("key").on(data => {
         listener1Called = true
         assert.notEqual(data, null)
-        assert.deepEqual(data, {value: "test"})
+        assert.deepEqual(data, { value: "test" })
         checkComplete()
       }, true)
 
       user.get("key").on(data => {
         listener2Called = true
         assert.notEqual(data, null)
-        assert.deepEqual(data, {value: "test"})
+        assert.deepEqual(data, { value: "test" })
         checkComplete()
       }, true)
 
@@ -58,13 +58,13 @@ describe("system - user concurrent listeners", () => {
     let parentCalled = false
     let childCalled = false
 
-    user.get("parent").put({value: "parent-value"}, err => {
+    user.get("parent").put({ value: "parent-value" }, err => {
       assert.equal(err, null)
 
       user
         .get("parent")
         .next("child")
-        .put({value: "child-value"}, err => {
+        .put({ value: "child-value" }, err => {
           assert.equal(err, null)
 
           // Listen on parent
@@ -84,7 +84,7 @@ describe("system - user concurrent listeners", () => {
             .on(data => {
               childCalled = true
               assert.notEqual(data, null)
-              assert.deepEqual(data, {value: "child-value"})
+              assert.deepEqual(data, { value: "child-value" })
               checkComplete()
             }, true)
 
@@ -101,7 +101,7 @@ describe("system - user concurrent listeners", () => {
     const results: unknown[] = []
 
     // Put data first
-    user.get("race").put({value: "first"}, err => {
+    user.get("race").put({ value: "first" }, err => {
       assert.equal(err, null)
 
       // Set up listener with _get=true to read existing data
@@ -112,7 +112,7 @@ describe("system - user concurrent listeners", () => {
 
       // Immediately put new data - listener will fire for this put as well
       setTimeout(() => {
-        user.get("race").put({value: "second"}, err => {
+        user.get("race").put({ value: "second" }, err => {
           assert.equal(err, null)
 
           setTimeout(() => {
@@ -133,7 +133,7 @@ describe("system - user concurrent listeners", () => {
   test("cleanup", (t, done) => {
     fs.rm(
       "test/system/user-concurrent-listeners",
-      {recursive: true, force: true},
+      { recursive: true, force: true },
       err => {
         assert.equal(err, null)
         done()

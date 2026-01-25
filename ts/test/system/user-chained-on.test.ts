@@ -1,9 +1,9 @@
 import fs from "fs"
-import { Server} from "mock-socket"
-import { describe, test} from "node:test"
+import { Server } from "mock-socket"
+import { describe, test } from "node:test"
 import assert from "node:assert/strict"
-import Holster from "../../src/holster.ts"
-import type { HolsterAPI } from "../../src/holster.ts"
+import Holster from "../../src/holster"
+import type { HolsterAPI } from "../../src/holster"
 
 describe("system - user chained get with on", () => {
   const wss: Server = new Server("ws://localhost:9012")
@@ -34,14 +34,14 @@ describe("system - user chained get with on", () => {
 
   test("put then on listener receives data", (t, done) => {
     // Put data first
-    user.get("key2").put({value: "test"}, err => {
+    user.get("key2").put({ value: "test" }, err => {
       assert.equal(err, null)
 
       // Then set up listener - should get the existing data
       setTimeout(() => {
         user.get("key2").on(data => {
           assert.notEqual(data, null)
-          assert.deepEqual(data, {value: "test"})
+          assert.deepEqual(data, { value: "test" })
           done()
         }, true)
       }, 50)
@@ -51,7 +51,7 @@ describe("system - user chained get with on", () => {
   test("cleanup", (t, done) => {
     fs.rm(
       "test/system/user-chained-on",
-      {recursive: true, force: true},
+      { recursive: true, force: true },
       err => {
         assert.equal(err, null)
         done()

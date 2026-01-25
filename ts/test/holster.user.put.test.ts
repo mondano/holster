@@ -1,9 +1,9 @@
 import fs from "fs"
 import { Server } from "mock-socket"
-import {describe, test} from "node:test"
+import { describe, test } from "node:test"
 import assert from "node:assert/strict"
-import Holster from "../src/holster.ts"
-import type { HolsterAPI } from "../src/holster.ts"
+import Holster from "../src/holster"
+import type { HolsterAPI } from "../src/holster"
 
 describe("holster.user.put", () => {
   const wss: Server = new Server("ws://localhost:1234")
@@ -88,7 +88,7 @@ describe("holster.user.put", () => {
   })
 
   test("put and get values in for loop", (t, done) => {
-    ;(async () => {
+    ; (async () => {
       for (let i = 0; i < 5; i++) {
         user.get("for" + i).put(i, err => {
           assert.equal(err, null)
@@ -207,7 +207,7 @@ describe("holster.user.put", () => {
             assert.equal(data, "nested value")
 
             user.get("nested").next("child", data => {
-              assert.deepEqual(data, {has: "child value"})
+              assert.deepEqual(data, { has: "child value" })
               done()
             })
           })
@@ -243,7 +243,7 @@ describe("holster.user.put", () => {
                   .get("hello")
                   .next("nested")
                   .next("child", data => {
-                    assert.deepEqual(data, {has: "hello child value"})
+                    assert.deepEqual(data, { has: "hello child value" })
                     done()
                   })
               })
@@ -270,10 +270,10 @@ describe("holster.user.put", () => {
           assert.deepEqual(data, two)
 
           user.get("two").next("child1", data => {
-            assert.deepEqual(data, {has: "child value 1"})
+            assert.deepEqual(data, { has: "child value 1" })
 
             user.get("two").next("child2", data => {
-              assert.deepEqual(data, {has: "child value 2"})
+              assert.deepEqual(data, { has: "child value 2" })
               done()
             })
           })
@@ -300,14 +300,14 @@ describe("holster.user.put", () => {
         user.get("multiple", data => {
           assert.deepEqual(data, multiple)
 
-          user.get("multiple").next("child", {".": "has"}, data => {
-            assert.deepEqual(data, {has: "child value"})
+          user.get("multiple").next("child", { ".": "has" }, data => {
+            assert.deepEqual(data, { has: "child value" })
 
             user
               .get("multiple")
               .next("child")
-              .next("grandchild", {".": "has"}, data => {
-                assert.deepEqual(data, {has: "grandchild value"})
+              .next("grandchild", { ".": "has" }, data => {
+                assert.deepEqual(data, { has: "grandchild value" })
                 done()
               })
           })
@@ -419,7 +419,7 @@ describe("holster.user.put", () => {
         assert.equal(data, "nested value")
 
         user.get([alice, "nested"]).next("child", data => {
-          assert.deepEqual(data, {has: "child value"})
+          assert.deepEqual(data, { has: "child value" })
           done()
         })
       })
@@ -446,7 +446,7 @@ describe("holster.user.put", () => {
             .get([alice, "hello"])
             .next("nested")
             .next("child", data => {
-              assert.deepEqual(data, {has: "hello child value"})
+              assert.deepEqual(data, { has: "hello child value" })
               done()
             })
         })
@@ -455,7 +455,7 @@ describe("holster.user.put", () => {
 
   test("cleanup", (t, done) => {
     setTimeout(() => {
-      fs.rm("test/holster.user.put", {recursive: true, force: true}, err => {
+      fs.rm("test/holster.user.put", { recursive: true, force: true }, err => {
         assert.equal(err, null)
         done()
       })

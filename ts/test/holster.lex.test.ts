@@ -1,13 +1,13 @@
 import fs from "fs"
 import { Server } from "mock-socket"
-import {describe, test} from "node:test"
+import { describe, test } from "node:test"
 import assert from "node:assert/strict"
-import Holster from "../src/holster.ts"
-import type { HolsterAPI } from "../src/holster.ts"
+import Holster from "../src/holster"
+import type { HolsterAPI } from "../src/holster"
 
 describe("holster.lex", () => {
   const wss: Server = new Server("ws://localhost:1234")
-  const holster: HolsterAPI = Holster({file: "test/holster.lex", wss: wss, maxAge: 100})
+  const holster: HolsterAPI = Holster({ file: "test/holster.lex", wss: wss, maxAge: 100 })
 
   test("object on root in graph format", (t, done) => {
     const plain = {
@@ -20,30 +20,30 @@ describe("holster.lex", () => {
       assert.equal(err, null)
 
       // Prefix tests. (Need to be sequential to match return values.)
-      holster.get("plain", {".": {"*": "k"}}, data => {
-        assert.deepEqual(data, {key: "plain value"})
+      holster.get("plain", { ".": { "*": "k" } }, data => {
+        assert.deepEqual(data, { key: "plain value" })
 
-        holster.get("plain", {".": {"*": "t"}}, data => {
-          assert.deepEqual(data, {true: true})
+        holster.get("plain", { ".": { "*": "t" } }, data => {
+          assert.deepEqual(data, { true: true })
 
-          holster.get("plain", {".": {"*": "f"}}, data => {
-            assert.deepEqual(data, {false: false})
+          holster.get("plain", { ".": { "*": "f" } }, data => {
+            assert.deepEqual(data, { false: false })
 
-            holster.get("plain", {".": {"*": "n"}}, data => {
-              assert.deepEqual(data, {number: 42})
+            holster.get("plain", { ".": { "*": "n" } }, data => {
+              assert.deepEqual(data, { number: 42 })
             })
 
             // Both less than and greater than.
-            holster.get("plain", {".": {"<": "n", ">": "falsy"}}, data => {
-              assert.deepEqual(data, {key: "plain value"})
+            holster.get("plain", { ".": { "<": "n", ">": "falsy" } }, data => {
+              assert.deepEqual(data, { key: "plain value" })
 
               // Only less than.
-              holster.get("plain", {".": {"<": "k"}}, data => {
-                assert.deepEqual(data, {false: false})
+              holster.get("plain", { ".": { "<": "k" } }, data => {
+                assert.deepEqual(data, { false: false })
 
                 // Only greater than.
-                holster.get("plain", {".": {">": "numbers"}}, data => {
-                  assert.deepEqual(data, {true: true})
+                holster.get("plain", { ".": { ">": "numbers" } }, data => {
+                  assert.deepEqual(data, { true: true })
                   done()
                 })
               })
@@ -69,15 +69,15 @@ describe("holster.lex", () => {
       // Getting a nested object requires waiting for radisk to write to disk,
       // as it will batch the writes. (Default wait is 1 millisecond.)
       setTimeout(() => {
-        holster.get("nested", {".": {"*": "k"}}, data => {
-          assert.deepEqual(data, {key: "nested value"})
+        holster.get("nested", { ".": { "*": "k" } }, data => {
+          assert.deepEqual(data, { key: "nested value" })
 
-          holster.get("nested").next("child", {".": {"*": "h"}}, data => {
-            assert.deepEqual(data, {has: "child value"})
+          holster.get("nested").next("child", { ".": { "*": "h" } }, data => {
+            assert.deepEqual(data, { has: "child value" })
 
-            holster.get("nested").next("child", {".": {"<": "has"}}, data => {
+            holster.get("nested").next("child", { ".": { "<": "has" } }, data => {
               // Less than means less than or equal to in lex.
-              assert.deepEqual(data, {has: "child value"})
+              assert.deepEqual(data, { has: "child value" })
               done()
             })
           })
@@ -102,21 +102,21 @@ describe("holster.lex", () => {
         assert.equal(err, null)
 
         setTimeout(() => {
-          holster.get("hello").next("nested", {".": {"*": "k"}}, data => {
-            assert.deepEqual(data, {key: "hello nested value"})
+          holster.get("hello").next("nested", { ".": { "*": "k" } }, data => {
+            assert.deepEqual(data, { key: "hello nested value" })
 
             holster
               .get("hello")
               .next("nested")
-              .next("child", {".": {"*": "h"}}, data => {
-                assert.deepEqual(data, {has: "hello child value"})
+              .next("child", { ".": { "*": "h" } }, data => {
+                assert.deepEqual(data, { has: "hello child value" })
 
                 holster
                   .get("hello")
                   .next("nested")
-                  .next("child", {".": {">": "other"}}, data => {
+                  .next("child", { ".": { ">": "other" } }, data => {
                     // Greater than means greater than or equal to in lex.
-                    assert.deepEqual(data, {other: "other child value"})
+                    assert.deepEqual(data, { other: "other child value" })
                     done()
                   })
               })
@@ -139,7 +139,7 @@ describe("holster.lex", () => {
       assert.equal(err, null)
 
       setTimeout(() => {
-        holster.get("two", {".": {"*": "child"}}, data => {
+        holster.get("two", { ".": { "*": "child" } }, data => {
           assert.deepEqual(data, {
             child1: two.child1,
             child2: two.child2,
@@ -147,8 +147,8 @@ describe("holster.lex", () => {
 
           holster
             .get("two")
-            .next("child1", {".": {">": "g", "<": "i"}}, data => {
-              assert.deepEqual(data, {has: "child value 1"})
+            .next("child1", { ".": { ">": "g", "<": "i" } }, data => {
+              assert.deepEqual(data, { has: "child value 1" })
               done()
             })
         })
@@ -175,7 +175,7 @@ describe("holster.lex", () => {
       holster
         .get("on-nested")
         .next("child")
-        .on({".": {">": "h"}}, data => {
+        .on({ ".": { ">": "h" } }, data => {
           assert.deepEqual(data, update.child)
           done()
         })
@@ -189,7 +189,7 @@ describe("holster.lex", () => {
   })
 
   test("cleanup", (t, done) => {
-    fs.rm("test/holster.lex", {recursive: true, force: true}, err => {
+    fs.rm("test/holster.lex", { recursive: true, force: true }, err => {
       assert.equal(err, null)
       done()
     })

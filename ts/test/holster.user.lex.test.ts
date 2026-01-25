@@ -1,9 +1,9 @@
 import fs from "fs"
 import { Server } from "mock-socket"
-import {describe, test} from "node:test"
+import { describe, test } from "node:test"
 import assert from "node:assert/strict"
-import Holster from "../src/holster.ts"
-import type { HolsterAPI } from "../src/holster.ts"
+import Holster from "../src/holster"
+import type { HolsterAPI } from "../src/holster"
 
 describe("holster.user.lex", () => {
   const wss: Server = new Server("ws://localhost:1234")
@@ -41,30 +41,30 @@ describe("holster.user.lex", () => {
       assert.equal(err, null)
 
       // Prefix tests. (Need to be sequential to match return values.)
-      user.get("plain", {".": {"*": "k"}}, data => {
-        assert.deepEqual(data, {key: "plain value"})
+      user.get("plain", { ".": { "*": "k" } }, data => {
+        assert.deepEqual(data, { key: "plain value" })
 
-        user.get("plain", {".": {"*": "t"}}, data => {
-          assert.deepEqual(data, {true: true})
+        user.get("plain", { ".": { "*": "t" } }, data => {
+          assert.deepEqual(data, { true: true })
 
-          user.get("plain", {".": {"*": "f"}}, data => {
-            assert.deepEqual(data, {false: false})
+          user.get("plain", { ".": { "*": "f" } }, data => {
+            assert.deepEqual(data, { false: false })
 
-            user.get("plain", {".": {"*": "n"}}, data => {
-              assert.deepEqual(data, {number: 42})
+            user.get("plain", { ".": { "*": "n" } }, data => {
+              assert.deepEqual(data, { number: 42 })
             })
 
             // Both less than and greater than.
-            user.get("plain", {".": {"<": "n", ">": "falsy"}}, data => {
-              assert.deepEqual(data, {key: "plain value"})
+            user.get("plain", { ".": { "<": "n", ">": "falsy" } }, data => {
+              assert.deepEqual(data, { key: "plain value" })
 
               // Only less than.
-              user.get("plain", {".": {"<": "k"}}, data => {
-                assert.deepEqual(data, {false: false})
+              user.get("plain", { ".": { "<": "k" } }, data => {
+                assert.deepEqual(data, { false: false })
 
                 // Only greater than.
-                user.get("plain", {".": {">": "numbers"}}, data => {
-                  assert.deepEqual(data, {true: true})
+                user.get("plain", { ".": { ">": "numbers" } }, data => {
+                  assert.deepEqual(data, { true: true })
                   done()
                 })
               })
@@ -91,15 +91,15 @@ describe("holster.user.lex", () => {
       // Getting a nested object requires waiting for radisk to write to disk,
       // as it will batch the writes. (Default wait is 1 millisecond.)
       setTimeout(() => {
-        user.get("nested", {".": {"*": "k"}}, data => {
-          assert.deepEqual(data, {key: "nested value"})
+        user.get("nested", { ".": { "*": "k" } }, data => {
+          assert.deepEqual(data, { key: "nested value" })
 
-          user.get("nested").next("child", {".": {"*": "h"}}, data => {
-            assert.deepEqual(data, {has: "child value"})
+          user.get("nested").next("child", { ".": { "*": "h" } }, data => {
+            assert.deepEqual(data, { has: "child value" })
 
-            user.get("nested").next("child", {".": {"<": "has"}}, data => {
+            user.get("nested").next("child", { ".": { "<": "has" } }, data => {
               // Less than means less than or equal to in lex.
-              assert.deepEqual(data, {has: "child value"})
+              assert.deepEqual(data, { has: "child value" })
               done()
             })
           })
@@ -128,7 +128,7 @@ describe("holster.user.lex", () => {
       user
         .get("on-nested")
         .next("child")
-        .on({".": {">": "h"}}, data => {
+        .on({ ".": { ">": "h" } }, data => {
           assert.deepEqual(data, update.child)
           done()
         })
@@ -142,7 +142,7 @@ describe("holster.user.lex", () => {
   })
 
   test("cleanup", (t, done) => {
-    fs.rm("test/holster.user.lex", {recursive: true, force: true}, err => {
+    fs.rm("test/holster.user.lex", { recursive: true, force: true }, err => {
       assert.equal(err, null)
       done()
     })

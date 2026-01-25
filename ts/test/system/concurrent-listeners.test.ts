@@ -1,19 +1,19 @@
 import fs from "fs"
-import { Server} from "mock-socket"
-import { describe, test} from "node:test"
+import { Server } from "mock-socket"
+import { describe, test } from "node:test"
 import assert from "node:assert/strict"
-import Holster from "../../src/holster.ts"
-import type { HolsterAPI } from "../../src/holster.ts"
+import Holster from "../../src/holster"
+import type { HolsterAPI } from "../../src/holster"
 
 describe("system - concurrent listeners", () => {
   const wss: Server = new Server("ws://localhost:9005")
-  const holster: HolsterAPI = Holster({file: "test/system/concurrent-listeners", wss: wss})
+  const holster: HolsterAPI = Holster({ file: "test/system/concurrent-listeners", wss: wss })
 
   test("multiple listeners on same path receive data", (t, done) => {
     let listener1Called = false
     let listener2Called = false
 
-    holster.get("key").put({value: "test"}, err => {
+    holster.get("key").put({ value: "test" }, err => {
       assert.equal(err, null)
 
       // Set up two listeners on the same path
@@ -43,13 +43,13 @@ describe("system - concurrent listeners", () => {
     let parentCalled = false
     let childCalled = false
 
-    holster.get("parent").put({value: "parent-value"}, err => {
+    holster.get("parent").put({ value: "parent-value" }, err => {
       assert.equal(err, null)
 
       holster
         .get("parent")
         .next("child")
-        .put({value: "child-value"}, err => {
+        .put({ value: "child-value" }, err => {
           assert.equal(err, null)
 
           // Listen on parent
@@ -84,7 +84,7 @@ describe("system - concurrent listeners", () => {
     const results: unknown[] = []
 
     // Put data first
-    holster.get("race").put({value: "first"}, err => {
+    holster.get("race").put({ value: "first" }, err => {
       assert.equal(err, null)
 
       // Set up listener with _get=true to read existing data
@@ -95,7 +95,7 @@ describe("system - concurrent listeners", () => {
 
       // Immediately put new data - listener will fire for this put as well
       setTimeout(() => {
-        holster.get("race").put({value: "second"}, err => {
+        holster.get("race").put({ value: "second" }, err => {
           assert.equal(err, null)
 
           setTimeout(() => {
@@ -116,7 +116,7 @@ describe("system - concurrent listeners", () => {
   test("cleanup", (t, done) => {
     fs.rm(
       "test/system/concurrent-listeners",
-      {recursive: true, force: true},
+      { recursive: true, force: true },
       err => {
         assert.equal(err, null)
         done()

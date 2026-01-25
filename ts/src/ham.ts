@@ -3,8 +3,8 @@
  * Conflict resolution algorithm for distributed data synchronization
  */
 
-import * as utils from "./utils.ts"
-import SEA from "./sea.ts"
+import * as utils from "./utils"
+import SEA from "./sea"
 import type {
   Graph,
   GraphNode,
@@ -13,7 +13,7 @@ import type {
   HamMixResult,
   ListenMap,
   Timestamp,
-} from "./schemas.ts"
+} from "./schemas"
 
 // Maximum number of souls to keep in memory
 const MAX_GRAPH_SIZE = 10000

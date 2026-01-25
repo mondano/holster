@@ -2,8 +2,8 @@ import fs from "fs"
 import { Server } from "mock-socket"
 import { describe, test } from "node:test"
 import assert from "node:assert/strict"
-import Wire from "../src/wire.ts"
-import type { WireInterface } from "../src/schemas.ts"
+import Wire from "../src/wire"
+import type { WireInterface } from "../src/schemas"
 
 describe("wire", () => {
   // Need different websocket servers otherwise data on file will sync up.
@@ -20,7 +20,7 @@ describe("wire", () => {
       const soul = msg.get["#"]
       const put = {
         [soul]: {
-          _: {"#": soul, ">": {test: 1}},
+          _: { "#": soul, ">": { test: 1 } },
           test: "property",
         },
       }
@@ -42,7 +42,7 @@ describe("wire", () => {
   }
 
   test("get node", (t, done) => {
-    kitty.get({"#": "FDSA"}, msg => {
+    kitty.get({ "#": "FDSA" }, msg => {
       assert.deepEqual(msg, {
         err: undefined,
         put: {
@@ -58,7 +58,7 @@ describe("wire", () => {
             },
             color: "ginger",
             name: "Fluffy",
-            slave: {"#": "ASDF"},
+            slave: { "#": "ASDF" },
             species: "felis silvestris",
           },
         },
@@ -68,14 +68,14 @@ describe("wire", () => {
   })
 
   test("get item", (t, done) => {
-    kitty.get({"#": "FDSA", ".": "species"}, msg => {
+    kitty.get({ "#": "FDSA", ".": "species" }, msg => {
       assert.deepEqual(msg, {
         err: undefined,
         put: {
           FDSA: {
             _: {
               "#": "FDSA",
-              ">": {species: 2},
+              ">": { species: 2 },
             },
             species: "felis silvestris",
           },
@@ -86,13 +86,13 @@ describe("wire", () => {
   })
 
   test("get node from wire", (t, done) => {
-    wire.get({"#": "not on disk"}, msg => {
+    wire.get({ "#": "not on disk" }, msg => {
       assert.deepEqual(msg, {
         put: {
           "not on disk": {
             _: {
               "#": "not on disk",
-              ">": {test: 1, other: 2},
+              ">": { test: 1, other: 2 },
             },
             test: "property",
             other: "value",
@@ -104,13 +104,13 @@ describe("wire", () => {
   })
 
   test("get item from wire", (t, done) => {
-    wire.get({"#": "not on disk", ".": "test"}, msg => {
+    wire.get({ "#": "not on disk", ".": "test" }, msg => {
       assert.deepEqual(msg, {
         put: {
           "not on disk": {
             _: {
               "#": "not on disk",
-              ">": {test: 1},
+              ">": { test: 1 },
             },
             test: "property",
           },
@@ -123,7 +123,7 @@ describe("wire", () => {
   test("put and get new node", (t, done) => {
     const update = {
       key: {
-        _: {"#": "key", ">": {value: 1, otherValue: 1}},
+        _: { "#": "key", ">": { value: 1, otherValue: 1 } },
         value: "wire test",
         otherValue: false,
       },
@@ -131,13 +131,13 @@ describe("wire", () => {
     wire.put(update, err => {
       assert.deepEqual(err, null)
 
-      wire.get({"#": "key", ".": "value"}, msg => {
+      wire.get({ "#": "key", ".": "value" }, msg => {
         assert.deepEqual(msg, {
           put: {
             key: {
               _: {
                 "#": "key",
-                ">": {value: 1},
+                ">": { value: 1 },
               },
               value: "wire test",
             },
@@ -151,7 +151,7 @@ describe("wire", () => {
   test("cleanup", (t, done) => {
     // Timeout to let extra wire sends finish before tests end.
     setTimeout(() => {
-      fs.rm("test/wire", {recursive: true, force: true}, err => {
+      fs.rm("test/wire", { recursive: true, force: true }, err => {
         assert.equal(err, null)
         done()
       })

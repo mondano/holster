@@ -18,27 +18,27 @@ The TypeScript implementation is a faithful port of the JavaScript codebase with
 ```
 ts/
 ├── src/                    # TypeScript source files
-│   ├── holster.ts         # Main API (get, put, on, off)
-│   ├── user.ts            # User authentication & management
-│   ├── wire.ts            # WebSocket message routing
-│   ├── store.ts           # Storage interface (radisk wrapper)
-│   ├── radisk.ts          # Persistent radix tree with file splitting
-│   ├── radix.ts           # In-memory radix tree
-│   ├── sea.ts             # Security, Encryption, Authentication
-│   ├── sea-utils.ts       # Crypto utilities (AES-GCM)
-│   ├── ham.ts             # Hypothetical Amnesia Machine (conflict resolution)
-│   ├── schemas.ts         # 🎯 Zod schemas (single source of truth)
-│   ├── utils.ts           # General utilities
-│   ├── get.ts             # GET helpers
-│   ├── dup.ts             # Duplicate detection
-│   ├── buffer.ts          # Buffer utilities
-│   ├── array.ts           # Array helpers
-│   └── index.ts           # Public API exports
+│   ├── holster         # Main API (get, put, on, off)
+│   ├── user            # User authentication & management
+│   ├── wire            # WebSocket message routing
+│   ├── store           # Storage interface (radisk wrapper)
+│   ├── radisk          # Persistent radix tree with file splitting
+│   ├── radix           # In-memory radix tree
+│   ├── sea             # Security, Encryption, Authentication
+│   ├── sea-utils       # Crypto utilities (AES-GCM)
+│   ├── ham             # Hypothetical Amnesia Machine (conflict resolution)
+│   ├── schemas         # 🎯 Zod schemas (single source of truth)
+│   ├── utils           # General utilities
+│   ├── get             # GET helpers
+│   ├── dup             # Duplicate detection
+│   ├── buffer          # Buffer utilities
+│   ├── array           # Array helpers
+│   └── index           # Public API exports
 │
 ├── test/                   # TypeScript test files
-│   ├── *.test.ts          # Unit tests (mirror JavaScript tests)
+│   ├── *.test          # Unit tests (mirror JavaScript tests)
 │   └── system/            # Integration tests
-│       └── *.test.ts      # End-to-end scenarios
+│       └── *.test      # End-to-end scenarios
 │
 └── README.md              # This file
 
@@ -114,7 +114,7 @@ npx tsc --watch
 ```
 
 **Output:** Compiled files go to `dist/src/` and `dist/test/`  
-**Note:** Compilation is optional - tests run directly on `.ts` files
+**Note:** Compilation is optional - tests run directly on `` files
 
 ### Testing
 
@@ -122,13 +122,13 @@ npx tsc --watch
 # Run all TypeScript tests (recommended)
 npm run test:ts
 # or manually
-node --test ts/test/**/*.test.ts ts/test/system/**/*.test.ts
+node --test ts/test/**/*.test ts/test/system/**/*.test
 
 # Run specific test suite
-node --test ts/test/holster.get.test.ts
+node --test ts/test/holster.get.test
 
 # Run with filter
-node --test --test-name-pattern="put and get" ts/test/**/*.test.ts
+node --test --test-name-pattern="put and get" ts/test/**/*.test
 
 # Run only system tests
 npm run test:ts:system
@@ -145,7 +145,7 @@ npm run test:ts:system
 npx tsc --noEmit
 
 # Check specific file
-npx tsc --noEmit ts/src/holster.ts
+npx tsc --noEmit ts/src/holster
 ```
 
 ### Linting
@@ -350,8 +350,8 @@ store.put({
 ### Test Organization
 
 Tests mirror the source structure:
-- `radix.test.ts` → tests `radix.ts`
-- `holster.on.test.ts` → tests `.on()` method
+- `radix.test` → tests `radix`
+- `holster.on.test` → tests `.on()` method
 - `system/` → integration tests
 
 ### Test Patterns
@@ -430,16 +430,16 @@ const radisk = Radisk({
 
 ```bash
 # Add console.log statements in source and run tests directly
-node --test ts/test/your-test.test.ts
+node --test ts/test/your-test.test
 
 # Or use Node.js inspector
-node --inspect-brk --test ts/test/your-test.test.ts
+node --inspect-brk --test ts/test/your-test.test
 ```
 
 ### Common Issues
 
 **"Cannot find module" errors:**
-- Ensure imports use `.ts` extensions for TypeScript files
+- Ensure imports use `` extensions for TypeScript files
 - Check that all dependencies are installed (`npm install`)
 
 **Type errors in tests:**
@@ -664,7 +664,7 @@ For now, the documented skip and workaround are sufficient for production use.
 
 ### Adding New Features
 
-1. Define Zod schema in `schemas.ts`
+1. Define Zod schema in `schemas`
 2. Derive TypeScript type with `z.infer<typeof Schema>`
 3. Implement feature using inferred types
 4. Add tests mirroring JavaScript test structure
@@ -705,4 +705,4 @@ For issues or questions about the TypeScript implementation:
 1. Check this README first
 2. Review the JavaScript source for reference
 3. Check test files for usage examples
-4. See `schemas.ts` for all data structure definitions
+4. See `schemas` for all data structure definitions

@@ -2,8 +2,8 @@ import fs from "fs"
 import { Server } from "mock-socket"
 import { describe, test } from "node:test"
 import assert from "node:assert/strict"
-import User from "../src/user.ts"
-import type { UserInterface } from "../src/schemas.ts"
+import User from "../src/user"
+import type { UserInterface } from "../src/schemas"
 
 describe("user", () => {
   const wss: Server = new Server("ws://localhost:1234")
@@ -166,7 +166,7 @@ describe("user", () => {
   })
 
   test("cleanup", (t, done) => {
-    fs.rm("test/user", {recursive: true, force: true}, err => {
+    fs.rm("test/user", { recursive: true, force: true }, err => {
       assert.equal(err, null)
       done()
     })

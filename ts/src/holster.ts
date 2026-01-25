@@ -3,10 +3,10 @@
  * Provides chainable interface for get, put, on, off operations
  */
 
-import * as utils from "./utils.ts"
-import Wire, { type WireAPI } from "./wire.ts"
-import User, { type UserInterface } from "./user.ts"
-import SEA from "./sea.ts"
+import * as utils from "./utils"
+import Wire, { type WireAPI } from "./wire"
+import User, { type UserInterface } from "./user"
+import SEA from "./sea"
 import type {
   HolsterOptions,
   ChainItem,
@@ -18,7 +18,7 @@ import type {
   LexWithDot,
   UserIdentity,
   WireOptions,
-} from "./schemas.ts"
+} from "./schemas"
 
 /**
  * Holster API interface
@@ -766,67 +766,67 @@ const Holster = (opt?: HolsterOptions | string | string[]): HolsterAPI => {
       user: () => {
         if (!(user as { get?: unknown }).get) {
           Object.assign(user, api())
-          ;(user as UserInterface & HolsterAPI).get = function (
-            this: HolsterAPI,
-            keys: string | string[],
-            lex?: LexFilter | ((data: unknown) => void),
-            cb?: ((data: unknown) => void) | WireOptions,
-            _opt?: WireOptions
-          ): HolsterAPI {
-            let lexFilter: LexFilter | null | undefined
-            let callback: ((data: unknown) => void) | undefined
-            let opts: WireOptions | undefined
+            ; (user as UserInterface & HolsterAPI).get = function (
+              this: HolsterAPI,
+              keys: string | string[],
+              lex?: LexFilter | ((data: unknown) => void),
+              cb?: ((data: unknown) => void) | WireOptions,
+              _opt?: WireOptions
+            ): HolsterAPI {
+              let lexFilter: LexFilter | null | undefined
+              let callback: ((data: unknown) => void) | undefined
+              let opts: WireOptions | undefined
 
-            if (typeof lex === "function") {
-              opts = cb as WireOptions
-              callback = lex
-              lexFilter = null
-            } else {
-              lexFilter = lex
-              callback = cb as (data: unknown) => void
-              opts = _opt
-            }
-
-            let pub: string | null = null
-            let key: string | null = null
-            if (user.is) pub = user.is.pub
-            if (typeof keys === "string") {
-              key = keys
-            } else if (keys instanceof Array) {
-              if (keys.length === 2 && keys[0] && keys[1]) {
-                pub = keys[0]
-                key = keys[1]
-              } else if (keys.length === 1 && keys[0]) {
-                key = keys[0]
+              if (typeof lex === "function") {
+                opts = cb as WireOptions
+                callback = lex
+                lexFilter = null
+              } else {
+                lexFilter = lex
+                callback = cb as (data: unknown) => void
+                opts = _opt
               }
-            }
-            if (!pub) {
-              console.log("error please log in or provide a public key")
-              if (callback) callback(null)
+
+              let pub: string | null = null
+              let key: string | null = null
+              if (user.is) pub = user.is.pub
+              if (typeof keys === "string") {
+                key = keys
+              } else if (keys instanceof Array) {
+                if (keys.length === 2 && keys[0] && keys[1]) {
+                  pub = keys[0]
+                  key = keys[1]
+                } else if (keys.length === 1 && keys[0]) {
+                  key = keys[0]
+                }
+              }
+              if (!pub) {
+                console.log("error please log in or provide a public key")
+                if (callback) callback(null)
+                return this
+              }
+
+              if (key === null || key === "" || key === "_") {
+                console.log("error please provide a key")
+                if (callback) callback(null)
+                return this
+              }
+
+              if (lexFilter && !callback) {
+                console.log("error lex requires a callback function")
+                return this
+              }
+
+              ctxid = utils.text.random()
+              const chain: ChainItem[] = [{ item: String(key), soul: "~" + pub }]
+              allctx.set(ctxid, { chain: chain, user: user.is, cb: callback as never })
+              if (!callback) return api(ctxid)
+
+              const _done = done(ctxid)
+              const resolved = resolve({ get: lexFilter, _opt: opts }, _done)
+              if (resolved) get(lexFilter as never, resolved.soul!, _done, opts)
               return this
-            }
-
-            if (key === null || key === "" || key === "_") {
-              console.log("error please provide a key")
-              if (callback) callback(null)
-              return this
-            }
-
-            if (lexFilter && !callback) {
-              console.log("error lex requires a callback function")
-              return this
-            }
-
-            ctxid = utils.text.random()
-            const chain: ChainItem[] = [{ item: String(key), soul: "~" + pub }]
-            allctx.set(ctxid, { chain: chain, user: user.is, cb: callback as never })
-            if (!callback) return api(ctxid)
-
-            const _done = done(ctxid)
-            const resolved = resolve({ get: lexFilter, _opt: opts }, _done)
-            if (resolved) get(lexFilter as never, resolved.soul!, _done, opts)
-            return this
-          } as never
+            } as never
         }
         return user as UserInterface & HolsterAPI
       },

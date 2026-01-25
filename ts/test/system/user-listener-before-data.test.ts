@@ -1,9 +1,9 @@
 import fs from "fs"
-import { Server} from "mock-socket"
-import { describe, test} from "node:test"
+import { Server } from "mock-socket"
+import { describe, test } from "node:test"
 import assert from "node:assert/strict"
-import Holster from "../../src/holster.ts"
-import type { HolsterAPI } from "../../src/holster.ts"
+import Holster from "../../src/holster"
+import type { HolsterAPI } from "../../src/holster"
 
 describe("system - user listener before data", () => {
   const wss: Server = new Server("ws://localhost:9017")
@@ -34,7 +34,7 @@ describe("system - user listener before data", () => {
 
     // Give listener time to set up
     setTimeout(() => {
-      user.get("testkey").put({value: "test"}, err => {
+      user.get("testkey").put({ value: "test" }, err => {
         assert.equal(err, null)
 
         // Give listener time to fire
@@ -47,7 +47,7 @@ describe("system - user listener before data", () => {
             true,
             "Should have at least one non-null result",
           )
-          assert.deepEqual(nonNull[0], {value: "test"})
+          assert.deepEqual(nonNull[0], { value: "test" })
           done()
         }, 200)
       })
@@ -57,7 +57,7 @@ describe("system - user listener before data", () => {
   test("cleanup", (t, done) => {
     fs.rm(
       "test/system/user-listener-before-data",
-      {recursive: true, force: true},
+      { recursive: true, force: true },
       err => {
         assert.equal(err, null)
         done()

@@ -1,13 +1,13 @@
 import fs from "fs"
 import { Server } from "mock-socket"
-import {describe, test} from "node:test"
+import { describe, test } from "node:test"
 import assert from "node:assert/strict"
-import Holster from "../src/holster.ts"
-import type { HolsterAPI } from "../src/holster.ts"
+import Holster from "../src/holster"
+import type { HolsterAPI } from "../src/holster"
 
 describe("holster.on", () => {
   const wss: Server = new Server("ws://localhost:1234")
-  const holster: HolsterAPI = Holster({file: "test/holster.on", wss: wss, maxAge: 100})
+  const holster: HolsterAPI = Holster({ file: "test/holster.on", wss: wss, maxAge: 100 })
 
   test("calling on without get callback null", (t, done) => {
     holster.on(data => {
@@ -235,7 +235,7 @@ describe("holster.on", () => {
         // Listener fires for updates (initial put already completed before listener setup)
         if (!parentFired) {
           parentFired = true
-          assert.deepEqual(data, {key: nested.key, ...update})
+          assert.deepEqual(data, { key: nested.key, ...update })
         }
       })
 
@@ -257,7 +257,7 @@ describe("holster.on", () => {
   })
 
   test("cleanup", (t, done) => {
-    fs.rm("test/holster.on", {recursive: true, force: true}, err => {
+    fs.rm("test/holster.on", { recursive: true, force: true }, err => {
       assert.equal(err, null)
       done()
     })

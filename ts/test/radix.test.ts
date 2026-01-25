@@ -1,8 +1,8 @@
 import { describe, test } from "node:test"
 import assert from "node:assert/strict"
-import Radix from "../src/radix.ts"
-import type { RadixFunction, EncodedValue } from "../src/schemas.ts"
-import Names from "./names.ts"
+import Radix from "../src/radix"
+import type { RadixFunction, EncodedValue } from "../src/schemas"
+import Names from "./names"
 
 const names: string[] = Names()
 

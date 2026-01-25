@@ -1,7 +1,7 @@
 import { describe, test } from "node:test"
 import assert from "node:assert/strict"
-import Radisk from "../src/radisk.ts"
-import type { RadiskInterface, RadiskOptions, EncodedValue } from "../src/schemas.ts"
+import Radisk from "../src/radisk"
+import type { RadiskInterface, RadiskOptions, EncodedValue } from "../src/schemas"
 
 describe("radisk with cache", () => {
   const puts: Record<string, string> = {}
@@ -29,7 +29,7 @@ describe("radisk with cache", () => {
     "file size is only 100 bytes so writing this value requires calling slice"
 
   test("write and read from memory with cache", (t, done) => {
-    radisk("key", "value", () => {})
+    radisk("key", "value", () => { })
 
     // Reading after write means radisk.batch is still available.
     radisk("key", (err, value) => {
@@ -60,29 +60,29 @@ describe("radisk with cache", () => {
   })
 
   test("write and read a plain object with cache", (t, done) => {
-    radisk("key", {object: true})
+    radisk("key", { object: true })
     setTimeout(() => {
       radisk("key", (err, value) => {
         // With cache enabled, we get the actual object back from memory
-        assert.deepEqual(value, {object: true})
+        assert.deepEqual(value, { object: true })
         done()
       })
     }, 10)
   })
 
   test("write a plain object with state and cache", (t, done) => {
-    radisk("key", [{object: true}, 1234])
+    radisk("key", [{ object: true }, 1234])
     setTimeout(() => {
       radisk("key", (err, value) => {
         // With cache enabled, we get the actual object back from memory
-        assert.deepEqual(value, [{object: true}, 1234])
+        assert.deepEqual(value, [{ object: true }, 1234])
         done()
       })
     }, 10)
   })
 
   test("write and read a soul relation with cache", (t, done) => {
-    const rel = {"#": "soul"}
+    const rel = { "#": "soul" }
     radisk("key", rel)
     setTimeout(() => {
       radisk("key", (err, value) => {
@@ -93,7 +93,7 @@ describe("radisk with cache", () => {
   })
 
   test("write and read a soul relation with state and cache", (t, done) => {
-    const rel: [{ "#": string }, number] = [{"#": "soul"}, 1234]
+    const rel: [{ "#": string }, number] = [{ "#": "soul" }, 1234]
     radisk("key", rel)
     setTimeout(() => {
       radisk("key", (err, value) => {

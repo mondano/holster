@@ -3,9 +3,9 @@
  * Provides get and put methods with filesystem or IndexedDB backend
  */
 
-import Radisk from "./radisk.ts"
-import Radix from "./radix.ts"
-import * as utils from "./utils.ts"
+import Radisk from "./radisk"
+import Radix from "./radix"
+import * as utils from "./utils"
 import type {
   Lex,
   Graph,
@@ -13,7 +13,7 @@ import type {
   StoreOptions,
   FileSystemInterface,
   EncodedValue,
-} from "./schemas.ts"
+} from "./schemas"
 
 const isNode = typeof document === "undefined"
 
@@ -83,7 +83,7 @@ const fileSystem = (opt: StoreOptions): FileSystemInterface => {
     const dbReady = new Promise<void>((resolve, reject) => {
       const o = indexedDB.open(dir, 1)
       o.onupgradeneeded = event => {
-        ;(event.target as IDBOpenDBRequest).result.createObjectStore(dir)
+        ; (event.target as IDBOpenDBRequest).result.createObjectStore(dir)
       }
       o.onerror = event => {
         console.log(event)
@@ -171,7 +171,7 @@ const fileSystem = (opt: StoreOptions): FileSystemInterface => {
           const req = tx.objectStore(dir).getAllKeys()
           req.onerror = () => console.log("error getting keys for", dir)
           req.onsuccess = () => {
-            ;(req.result as string[]).forEach(cb)
+            ; (req.result as string[]).forEach(cb)
             cb()
           }
         }

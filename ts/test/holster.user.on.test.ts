@@ -1,9 +1,9 @@
 import fs from "fs"
 import { Server } from "mock-socket"
-import {describe, test} from "node:test"
+import { describe, test } from "node:test"
 import assert from "node:assert/strict"
-import Holster from "../src/holster.ts"
-import type { HolsterAPI } from "../src/holster.ts"
+import Holster from "../src/holster"
+import type { HolsterAPI } from "../src/holster"
 
 describe("holster.user.on", () => {
   const wss: Server = new Server("ws://localhost:1234")
@@ -138,7 +138,7 @@ describe("holster.user.on", () => {
   })
 
   test("on for properties in for loop", (t, done) => {
-    ;(async () => {
+    ; (async () => {
       for (let i = 0; i < 5; i++) {
         user.get("for" + i).put(i, err => {
           assert.equal(err, null)
@@ -292,7 +292,7 @@ describe("holster.user.on", () => {
 
   test("cleanup", (t, done) => {
     setTimeout(() => {
-      fs.rm("test/holster.user.on", {recursive: true, force: true}, err => {
+      fs.rm("test/holster.user.on", { recursive: true, force: true }, err => {
         assert.equal(err, null)
         done()
       })
