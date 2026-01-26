@@ -1,5 +1,7 @@
 # DAM Protocol Formal Specification
 
+Keep in mind we already have Dup.ts, which can inform schema creation
+
 ## 1. Overview
 
 **DAM (Daisy-chain Ad-hoc Mesh-network)** is a transport layer abstraction and peer-to-peer networking algorithm that serves as default messaging protocol. It optimizes decentralized message propagation by reducing redundant broadcasts while maintaining mesh network connectivity.

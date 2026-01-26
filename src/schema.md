@@ -1,0 +1,1 @@
+It occurs to me that there are many areas in our code where we use typeof checks etc, and it seems to me that if we were to more elegantly use zod and our zod schemas, we could have much more elegant code, what do you think?

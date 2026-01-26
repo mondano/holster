@@ -1,0 +1,3 @@
+[test]
+# Always enable coverage
+coverage = true

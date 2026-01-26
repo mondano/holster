@@ -7,7 +7,7 @@
     "noUnusedParameters": false,
     "strict": false
   },
-  "include": ["ts/test/**/*"],
+  "include": ["test/**/*"],
   "exclude": ["node_modules"]
 }
 

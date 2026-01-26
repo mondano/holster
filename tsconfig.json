@@ -3,13 +3,13 @@
     "target": "ES2022",
     "module": "ESNext",
     "lib": ["ES2022", "DOM"],
+    "types": ["bun-types"],
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
     "outDir": "./dist",
-    "rootDir": "./ts",
     "noEmit": false,
     
     /* Strict Type Checking */
@@ -38,7 +38,7 @@
     "skipLibCheck": true,
     "downlevelIteration": true
   },
-  "include": ["ts/src/**/*"],
-  "exclude": ["node_modules", "dist", "build", "test", "examples", "ts/test"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "build", "test", "examples", "test"]
 }
 
