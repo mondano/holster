@@ -5,7 +5,7 @@ import Holster from "../../src/holster"
 import type { HolsterAPI } from "../../src/holster"
 
 describe("system - concurrent listeners", () => {
-  const wss: Server = new Server("ws://localhost:9005")
+  const wss: Server = new Server("ws://localhost:9105")
   const holster: HolsterAPI = Holster({ file: "test/system/concurrent-listeners", wss: wss })
 
   test("multiple listeners on same path receive data", async () => {

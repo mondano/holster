@@ -5,7 +5,7 @@ import Holster from "../../src/holster"
 import type { HolsterAPI } from "../../src/holster"
 
 describe("system - user chained get with on", () => {
-  const wss: Server = new Server("ws://localhost:9012")
+  const wss: Server = new Server("ws://localhost:9112")
   const holster: HolsterAPI = Holster({
     file: "test/system/user-chained-on",
     wss: wss,

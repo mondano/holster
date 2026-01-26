@@ -5,7 +5,7 @@ import Holster from "../../src/holster"
 import type { HolsterAPI } from "../../src/holster"
 
 describe("system - basic setup", () => {
-  const wss: Server = new Server("ws://localhost:9001")
+  const wss: Server = new Server("ws://localhost:9101")
   const holster: HolsterAPI = Holster({ file: "test/system/basic", wss: wss })
 
   test("put and get data", async () => {

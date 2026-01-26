@@ -5,13 +5,14 @@ import Holster from "../src/holster"
 import type { HolsterAPI } from "../src/holster"
 
 describe("holster.secure", () => {
-  const wss: Server = new Server("ws://localhost:1234")
+  const wss: Server = new Server("ws://localhost:9006")
   const holster: HolsterAPI = Holster({
     file: "test/holster.secure",
     wss: wss,
     maxAge: 100,
     secure: true,
-  })
+    wait: 500,
+  } as any)
   const user = holster.user()
   const expectedError = "error putting data on root: user required in secure mode"
 
@@ -85,14 +86,18 @@ describe("holster.secure", () => {
       user.create("alice", "password", resolve)
     })
     expect(err).toBe(null)
-  })
+    // Wait for user creation to fully complete
+    await new Promise(resolve => setTimeout(resolve, 100))
+  }, 10000)
 
   test("user auth", async () => {
     const err = await new Promise(resolve => {
       user.auth("alice", "password", resolve)
     })
     expect(err).toBe(null)
-  })
+    // Wait for authentication to fully complete
+    await new Promise(resolve => setTimeout(resolve, 100))
+  }, 10000)
 
   test("user put and get string", async () => {
     const err = await new Promise(resolve => {

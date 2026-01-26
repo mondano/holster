@@ -5,7 +5,7 @@ import Holster from "../src/holster"
 import type { HolsterAPI } from "../src/holster"
 
 describe("holster.on", () => {
-  const wss: Server = new Server("ws://localhost:1234")
+  const wss: Server = new Server("ws://localhost:9003")
   const holster: HolsterAPI = Holster({ file: "test/holster.on", wss: wss, maxAge: 100 })
 
   test("calling on without get callback null", async () => {
@@ -222,6 +222,7 @@ describe("holster.on", () => {
     await new Promise(resolve => holster.get("nested").put(nested, resolve))
 
     const update = {
+      key: "nested update",
       child: {
         has: "child update",
       },
@@ -247,7 +248,7 @@ describe("holster.on", () => {
     await new Promise(resolve => setTimeout(resolve, 100))
 
     expect(parentUpdates).toHaveLength(1)
-    expect(parentUpdates[0]).toEqual({ key: nested.key, ...update })
+    expect(parentUpdates[0]).toEqual(update)
     expect(childUpdates).toHaveLength(1)
     expect(childUpdates[0]).toEqual(update.child)
     holster.get("nested").off(parentCallback)

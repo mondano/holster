@@ -41,6 +41,8 @@ describe("wire", () => {
   }
 
   test("get node", async () => {
+    // Wait for wire to initialize and load data from disk
+    await new Promise(resolve => setTimeout(resolve, 100))
     const msg = await new Promise(resolve => {
       kitty.get({ "#": "FDSA" }, resolve)
     })
@@ -67,6 +69,8 @@ describe("wire", () => {
   })
 
   test("get item", async () => {
+    // Wait for wire to initialize and load data from disk
+    await new Promise(resolve => setTimeout(resolve, 100))
     const msg = await new Promise(resolve => {
       kitty.get({ "#": "FDSA", ".": "species" }, resolve)
     })

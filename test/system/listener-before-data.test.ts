@@ -5,7 +5,7 @@ import Holster from "../../src/holster"
 import type { HolsterAPI } from "../../src/holster"
 
 describe("system - listener before data", () => {
-  const wss: Server = new Server("ws://localhost:9007")
+  const wss: Server = new Server("ws://localhost:9107")
   const holster: HolsterAPI = Holster({ file: "test/system/listener-before-data", wss: wss })
 
   test("listener set up before data exists receives data when populated", async () => {

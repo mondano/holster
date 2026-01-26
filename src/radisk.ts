@@ -307,6 +307,11 @@ const Radisk = (opt: RadiskOptions) => {
             write.done = true
             write.sub = Radix()
             Radix.map(rad, write.slice)
+            // Update file list cache when creating new file
+            if (options.cache && fileListCache && !fileListCache.includes(write.limit)) {
+              fileListCache.push(write.limit)
+              fileListCache.sort()
+            }
             radisk.write(write.limit, write.sub, cb)
             return undefined
           }

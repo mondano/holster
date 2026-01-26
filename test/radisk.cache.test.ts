@@ -226,10 +226,19 @@ describe("radisk with cache", () => {
     expect(value).toBe(big)
   })
 
-  test.skip("add to last file with cache", async () => {
-    // Skip: This test exercises a complex edge case in file splitting
-    // that behaves differently with caching enabled
-    radisk("smallContinued", "continued value")
+  test("add to last file with cache", async () => {
+    await new Promise<void>((resolve) => {
+      radisk("smallContinued", "continued value", () => resolve())
+    })
+
+    const immediateValue = await new Promise((resolve, reject) => {
+      radisk("smallContinued", (err, value) => {
+        if (err) reject(err)
+        else resolve(value)
+      })
+    })
+    expect(immediateValue).toBe("continued value")
+
     await new Promise(resolve => setTimeout(resolve, 10))
 
     const value = await new Promise((resolve, reject) => {

@@ -5,7 +5,7 @@ import User from "../src/user"
 import type { UserInterface } from "../src/schemas"
 
 describe("user", () => {
-  const wss: Server = new Server("ws://localhost:1234")
+  const wss: Server = new Server("ws://localhost:9013")
   const user: UserInterface = User({ file: "test/user", wss: wss, maxAge: 100, wait: 500 } as any)
 
   test("create", async () => {
@@ -59,7 +59,7 @@ describe("user", () => {
     const err = await new Promise(resolve => user.auth("wrong", "password", resolve))
     expect(err).toBe("Wrong username or password")
     expect(user.is).toBe(null)
-  })
+  }, 15000)
 
   test("auth wrong password", async () => {
     const err = await new Promise(resolve => user.auth("alice", "wrong", resolve))

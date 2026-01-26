@@ -5,7 +5,7 @@ import Holster from "../../src/holster"
 import type { HolsterAPI } from "../../src/holster"
 
 describe("system - promise wrapped calls", () => {
-  const wss: Server = new Server("ws://localhost:9004")
+  const wss: Server = new Server("ws://localhost:9104")
   const holster: HolsterAPI = Holster({ file: "test/system/promise-wrapper", wss: wss })
 
   test("promise wrapped get returns null for missing key", async () => {

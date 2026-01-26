@@ -5,7 +5,7 @@ import Holster from "../src/holster"
 import type { HolsterAPI } from "../src/holster"
 
 describe("holster.off", () => {
-  const wss: Server = new Server("ws://localhost:1234")
+  const wss: Server = new Server("ws://localhost:9004")
   const holster: HolsterAPI = Holster({ file: "test/holster.off", wss: wss, maxAge: 100 })
 
   test("calling off without get callback null", async () => {

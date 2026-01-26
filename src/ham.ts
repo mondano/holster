@@ -43,8 +43,7 @@ const Ham = (
   if (signed && value !== currentValue) {
     return { historical: true }
   }
-
-  // Lexically compare to resolve conflict (for unsigned or matching values)
+// Lexically compare to resolve conflict (for unsigned or matching values)
   let valueStr = typeof value !== "string" ? JSON.stringify(value) || "" : value
   let currentValueStr =
     typeof currentValue !== "string"

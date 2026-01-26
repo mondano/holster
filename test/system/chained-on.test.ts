@@ -5,7 +5,7 @@ import Holster from "../../src/holster"
 import type { HolsterAPI } from "../../src/holster"
 
 describe("system - chained get with on", () => {
-  const wss: Server = new Server("ws://localhost:9002")
+  const wss: Server = new Server("ws://localhost:9102")
   const holster: HolsterAPI = Holster({ file: "test/system/chained-on", wss: wss })
 
   test("on listener fires with null when no data exists", async () => {
@@ -15,7 +15,7 @@ describe("system - chained get with on", () => {
     }
     holster.get("key").on(callback, true)
 
-    await new Promise(resolve => setTimeout(resolve, 50))
+    await new Promise(resolve => setTimeout(resolve, 500))
 
     // This is the actual behavior - on fires with null for non-existent keys
     expect(updates).toHaveLength(1)

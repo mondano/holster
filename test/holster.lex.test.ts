@@ -5,7 +5,7 @@ import Holster from "../src/holster"
 import type { HolsterAPI } from "../src/holster"
 
 describe("holster.lex", () => {
-  const wss: Server = new Server("ws://localhost:1234")
+  const wss: Server = new Server("ws://localhost:9005")
   const holster: HolsterAPI = Holster({ file: "test/holster.lex", wss: wss, maxAge: 100 })
 
   test("object on root in graph format", async () => {
