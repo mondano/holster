@@ -4,7 +4,7 @@ import Get from "../src/get"
 import HAM from "../src/ham"
 import User from "../src/user"
 import SEA from "../src/sea"
-import type { RadiskOptions, GetMessage, WireMessage } from "../src/schemas"
+import type { RadiskOptions, WireMessage } from "../src/schemas"
 
 describe("error handling - validation and edge cases", () => {
   describe("radisk validation errors", () => {
@@ -566,26 +566,24 @@ describe("error handling - validation and edge cases", () => {
   })
 
   describe("SEA crypto errors", () => {
-    test("rejects invalid signature in verify", async () => {
+    test("verify throws error for invalid signature format", async () => {
       const pair = await SEA.pair()
-      const data = "test message"
       const invalidSig = "not.a.valid.signature"
 
-      const result = await SEA.verify(invalidSig, pair.pub)
-
-      expect(result).toBe(false)
+      // Invalid signature format should throw during parsing
+      await expect(SEA.verify(invalidSig, pair)).rejects.toThrow()
     })
 
-    test("rejects signature with wrong public key", async () => {
+    test("verify returns null with wrong public key", async () => {
       const pair1 = await SEA.pair()
       const pair2 = await SEA.pair()
       const data = "test message"
 
       // Sign with pair1, verify with pair2's public key
       const sig = await SEA.sign(data, pair1)
-      const result = await SEA.verify(sig, pair2.pub)
+      const result = await SEA.verify(sig!, pair2)
 
-      expect(result).toBe(false)
+      expect(result).toBe(null)
     })
 
     test("sign throws error with null/undefined data", async () => {
@@ -596,46 +594,84 @@ describe("error handling - validation and edge cases", () => {
       await expect(SEA.sign(undefined as any, pair)).rejects.toThrow()
     })
 
-    test("handles null/undefined in encrypt", async () => {
-      const key = "test-encryption-key"
+    test("encrypt handles null/undefined data", async () => {
+      const pair = await SEA.pair()
 
-      const result1 = await SEA.encrypt(null as any, key)
-      const result2 = await SEA.encrypt(undefined as any, key)
+      const result1 = await SEA.encrypt(null, pair)
+      const result2 = await SEA.encrypt(undefined, pair)
 
-      // Should handle gracefully
-      expect(result1 !== undefined).toBe(true)
-      expect(result2 !== undefined).toBe(true)
+      // Should encrypt the literal values
+      expect(result1).toBeDefined()
+      expect(result2).toBeDefined()
     })
 
     test("decrypt returns null for invalid ciphertext", async () => {
-      const key = "test-key"
-      const invalidCt = "not:valid:ciphertext"
+      const pair = await SEA.pair()
+      const invalidCt = { ct: "invalid", iv: "invalid", s: "invalid" }
 
-      const result = await SEA.decrypt(invalidCt, key)
+      const result = await SEA.decrypt(invalidCt, pair)
 
       expect(result).toBe(null)
     })
 
     test("decrypt returns null with wrong key", async () => {
-      const correctKey = "correct-key"
-      const wrongKey = "wrong-key"
+      const pair1 = await SEA.pair()
+      const pair2 = await SEA.pair()
       const data = { secret: "value" }
 
-      const encrypted = await SEA.encrypt(data, correctKey)
-      const result = await SEA.decrypt(encrypted, wrongKey)
+      const encrypted = await SEA.encrypt(data, pair1)
+      const result = await SEA.decrypt(encrypted, pair2)
 
       expect(result).toBe(null)
     })
 
-    test("handles malformed public key in verify", async () => {
+    test("verify throws error with malformed pair object", async () => {
       const data = "test"
       const pair = await SEA.pair()
       const sig = await SEA.sign(data, pair)
 
-      // Use malformed public key - should return null for invalid key
-      const result = await SEA.verify(sig, "not-a-valid-pub-key")
+      // Use malformed pair - should throw when trying to import invalid key
+      await expect(SEA.verify(sig!, { pub: "not-a-valid-pub-key" })).rejects.toThrow()
+    })
 
-      expect(result).toBe(null)
+    test("sign returns null when pair is missing keys", async () => {
+      const data = "test"
+
+      // Missing priv key
+      const result1 = await SEA.sign(data, { pub: "pubkey" })
+      expect(result1).toBe(null)
+
+      // Missing pub key
+      const result2 = await SEA.sign(data, { priv: "privkey" })
+      expect(result2).toBe(null)
+
+      // Null pair
+      const result3 = await SEA.sign(data, null)
+      expect(result3).toBe(null)
+    })
+
+    test("encrypt returns null when pair is missing epriv", async () => {
+      const data = { test: "value" }
+
+      // Missing epriv key
+      const result1 = await SEA.encrypt(data, { pub: "pubkey" })
+      expect(result1).toBe(null)
+
+      // Null pair
+      const result2 = await SEA.encrypt(data, null)
+      expect(result2).toBe(null)
+    })
+
+    test("decrypt returns null when pair is missing epriv", async () => {
+      const enc = { ct: "test", iv: "test", s: "test" }
+
+      // Missing epriv key
+      const result1 = await SEA.decrypt(enc, { pub: "pubkey" })
+      expect(result1).toBe(null)
+
+      // Null pair
+      const result2 = await SEA.decrypt(enc, null)
+      expect(result2).toBe(null)
     })
 
     test("work handles empty inputs gracefully", async () => {
