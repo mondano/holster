@@ -54,14 +54,24 @@ const fileSystem = (opt: StoreOptions): FileSystemInterface => {
         })
       },
       put: (file, data, cb) => {
-        const tmp = file + "." + utils.text.random(9) + ".tmp"
+        console.log(`[STORE] put called: file=${file}, dataLength=${(data as string).length}`)
+        const tmp = dir + "/" + file + "." + utils.text.random(9) + ".tmp"
+        console.log(`[STORE] Writing to tmp: ${tmp}`)
         fs!.writeFile(tmp, data as string, (err: NodeJS.ErrnoException | null) => {
           if (err) {
             console.log("fs.writeFile error:", err)
             cb(err as never)
             return
           }
-          fs!.rename(tmp, dir + "/" + file, cb as never)
+          console.log(`[STORE] Write successful, renaming to: ${dir}/${file}`)
+          fs!.rename(tmp, dir + "/" + file, (err: NodeJS.ErrnoException | null) => {
+            if (err) {
+              console.log("fs.rename error:", err)
+            } else {
+              console.log(`[STORE] Rename successful`)
+            }
+            cb(err as never)
+          })
         })
       },
       list: cb => {
@@ -255,6 +265,7 @@ const Store = (opt?: StoreOptions): StoreInterface => {
       }
 
       radisk(soul + enq + key, (err, value) => {
+        console.log(`[STORE.get] radisk returned for soul="${soul}" key="${key}":`, JSON.stringify(value))
         let graph: Graph | undefined
         if (utils.obj.is(value)) {
           Radix.map(value as never, each)
@@ -268,6 +279,7 @@ const Store = (opt?: StoreOptions): StoreInterface => {
         if (graph && graph[soul] && Object.keys(signatures).length > 0) {
           graph[soul]._["s"] = signatures
         }
+        console.log(`[STORE.get] returning graph for soul="${soul}":`, JSON.stringify(graph))
         cb(err, graph)
       })
     },

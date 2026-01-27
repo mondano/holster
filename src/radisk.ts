@@ -194,7 +194,9 @@ const Radisk = (opt: RadiskOptions) => {
   radisk.batch.ed = 0
 
   radisk.thrash = (() => {
+    console.log(`[RADISK] thrash called, batch.ed=${radisk.batch.ed}, acks=${radisk.batch.acks.length}`)
     if (radisk.thrash.ing) {
+      console.log(`[RADISK] Already thrashing, setting more=true`)
       radisk.thrash.more = true
       return
     }
@@ -208,11 +210,13 @@ const Radisk = (opt: RadiskOptions) => {
     radisk.batch.acks = []
     radisk.batch.ed = 0
     let i = 0
+    console.log(`[RADISK] Calling radisk.save with batch.ed=${batch.ed}`)
     radisk.save(batch, err => {
       if (++i > 1) return
 
       perfLog("thrash", thrashStart, `batch-${batch.ed}`)
       if (err) options.log(err)
+      console.log(`[RADISK] Calling ${batch.acks.length} ack callbacks`)
       batch.acks.forEach(cb => cb(err))
       radisk.thrash.at = undefined
       radisk.thrash.ing = false
@@ -282,6 +286,7 @@ const Radisk = (opt: RadiskOptions) => {
   }
 
   radisk.write = (file, rad, cb) => {
+    console.log(`[RADISK] write called for file=${file}`)
     const write = {
       text: "",
       limit: "",

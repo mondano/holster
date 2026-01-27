@@ -19,6 +19,7 @@
   "license": "Zlib, MIT, Apache-2.0",
   "dependencies": {
     "express": "^5.1.0",
+    "fake-indexeddb": "^6.2.5",
     "fs": "^0.0.1-security",
     "ws": "^8.18.0",
     "zod": "^4.1.13"
