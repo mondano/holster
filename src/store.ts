@@ -251,7 +251,8 @@ const Store = (opt?: StoreOptions): StoreInterface => {
 
       const each = (value: EncodedValue, fieldKey: string): void => {
         // Always include userPublicKey for verification, regardless of filter
-        const filter = key === "" ? undefined : key
+        // Use the original lex["."] for filtering (handles strings, objects, arrays)
+        const filter = key === "" ? lex["."] : key
         if (fieldKey !== utils.userPublicKey && !utils.match(filter, fieldKey)) return
 
         if (!node) node = { _: { "#": soul, ">": {} } }

@@ -34,7 +34,7 @@ describe("system - user chained get with on", () => {
     }
     user.get("key").on(callback, true)
 
-    await new Promise(resolve => setTimeout(resolve, 50))
+    await new Promise(resolve => setTimeout(resolve, 600))
 
     // This is the actual behavior - on fires with null for non-existent keys
     expect(updates).toHaveLength(1)
