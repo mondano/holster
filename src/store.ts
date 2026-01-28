@@ -249,18 +249,19 @@ const Store = (opt?: StoreOptions): StoreInterface => {
       let node: GraphNode | undefined
       const signatures: Record<string, string> = {}
 
-      const each = (value: EncodedValue, key: string): void => {
+      const each = (value: EncodedValue, fieldKey: string): void => {
         // Always include userPublicKey for verification, regardless of filter
-        if (key !== utils.userPublicKey && !utils.match(lex["."], key)) return
+        const filter = key === "" ? undefined : key
+        if (fieldKey !== utils.userPublicKey && !utils.match(filter, fieldKey)) return
 
         if (!node) node = { _: { "#": soul, ">": {} } }
-        node[key] = value[0]
-        node._[">"][key] = value[1]
+        node[fieldKey] = value[0]
+        node._[">"][fieldKey] = value[1]
         // If signature is present, store it in _["s"]
         if (value.length === 3 && value[2]) {
           const state = value[1]
           signatures[state.toString()] = value[2]
-          signatures[key] = value[2]
+          signatures[fieldKey] = value[2]
         }
       }
 

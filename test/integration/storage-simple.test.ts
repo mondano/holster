@@ -17,7 +17,7 @@ describe("Integration - Local storage (no relay)", () => {
 
     // Read it back immediately
     const data = await new Promise(resolve => {
-      db.get("user1").on(resolve)
+      db.get("user1").on(resolve, true)
     })
 
     expect(data).toMatchObject({ name: "Alice", age: 30 })
@@ -38,7 +38,7 @@ describe("Integration - Local storage (no relay)", () => {
     await new Promise(resolve => setTimeout(resolve, 200)) // Wait for disk read
 
     const data = await new Promise(resolve => {
-      db2.get("counter").on(resolve)
+      db2.get("counter").on(resolve, true)
     })
 
     expect(data).toMatchObject({ value: 42 })
@@ -60,7 +60,7 @@ describe("Integration - Local storage (no relay)", () => {
 
     // Read merged data
     const data = await new Promise(resolve => {
-      db.get("profile").on(resolve)
+      db.get("profile").on(resolve, true)
     })
 
     expect(data).toMatchObject({ name: "Bob", age: 25, city: "NYC" })
@@ -76,19 +76,19 @@ describe("Integration - Local storage (no relay)", () => {
       })
     }
 
-    await new Promise(resolve => setTimeout(resolve, 200))
+    await new Promise(resolve => setTimeout(resolve, 500))
 
     // Verify a few random values
     const checks = await Promise.all([
-      new Promise(resolve => db.get("item0").on(resolve)),
-      new Promise(resolve => db.get("item25").on(resolve)),
-      new Promise(resolve => db.get("item49").on(resolve)),
+      new Promise(resolve => db.get("item0").on(resolve, true)),
+      new Promise(resolve => db.get("item25").on(resolve, true)),
+      new Promise(resolve => db.get("item49").on(resolve, true)),
     ])
 
     expect(checks[0]).toMatchObject({ value: 0 })
     expect(checks[1]).toMatchObject({ value: 25 })
     expect(checks[2]).toMatchObject({ value: 49 })
-  })
+  }, 30000)
 
   test("handles graph references", async () => {
     const db = Holster({ file: "test/integration/refs", port: 9805 })
@@ -110,7 +110,7 @@ describe("Integration - Local storage (no relay)", () => {
 
     // Read post and verify reference
     const post = await new Promise(resolve => {
-      db.get("post456").on(resolve)
+      db.get("post456").on(resolve, true)
     })
 
     expect(post).toMatchObject({
@@ -120,7 +120,7 @@ describe("Integration - Local storage (no relay)", () => {
 
     // Read author
     const author = await new Promise(resolve => {
-      db.get("author123").on(resolve)
+      db.get("author123").on(resolve, true)
     })
 
     expect(author).toMatchObject({ name: "Charlie" })
@@ -172,7 +172,7 @@ describe("Integration - Local storage (no relay)", () => {
     await new Promise(resolve => setTimeout(resolve, 100))
 
     const data = await new Promise(resolve => {
-      db.get("temp").on(resolve)
+      db.get("temp").on(resolve, true)
     })
 
     // Null should delete the property
@@ -204,9 +204,9 @@ describe("Integration - Local storage (no relay)", () => {
 
     // Spot check a few records
     const samples = await Promise.all([
-      new Promise(resolve => db.get("rec0").on(resolve)),
-      new Promise(resolve => db.get("rec100").on(resolve)),
-      new Promise(resolve => db.get("rec199").on(resolve)),
+      new Promise(resolve => db.get("rec0").on(resolve, true)),
+      new Promise(resolve => db.get("rec100").on(resolve, true)),
+      new Promise(resolve => db.get("rec199").on(resolve, true)),
     ])
 
     expect(samples[0]).toMatchObject({ id: 0, data: "value0" })

@@ -23,7 +23,7 @@ function createRelay(port: number): Server {
     port,
     fetch(req, server) {
       const url = new URL(req.url)
-      if (url.pathname === "/gun") {
+      if (url.pathname === "/holster") {
         const upgraded = server.upgrade(req)
         if (!upgraded) {
           return new Response("WebSocket upgrade failed", { status: 400 })
@@ -53,7 +53,7 @@ function createRelay(port: number): Server {
 }
 
 describe("Integration - Real relay sync", () => {
-  let relay: Server
+  let relay: Server<WebSocket>
   const relayPort = 9900
 
   beforeAll(async () => {
@@ -73,14 +73,14 @@ describe("Integration - Real relay sync", () => {
     const peer1 = Holster({
       file: "test/integration/peer1",
       port: 9910,  // Each peer gets its own port
-      peers: [`ws://localhost:${relayPort}/gun`],
+      peers: [`ws://localhost:${relayPort}/holster`],
     })
 
     console.log("[TEST] Creating peer2...")
     const peer2 = Holster({
       file: "test/integration/peer2",
       port: 9911,
-      peers: [`ws://localhost:${relayPort}/gun`],
+      peers: [`ws://localhost:${relayPort}/holster`],
     })
 
     // Wait for WebSocket connections to establish
@@ -118,13 +118,13 @@ describe("Integration - Real relay sync", () => {
   test("handles concurrent writes with CRDT conflict resolution", async () => {
     const peer1 = Holster({
       file: "test/integration/concurrent1",
-      peers: [`ws://localhost:${relayPort}/gun`],
+      peers: [`ws://localhost:${relayPort}/holster`],
       port: 9912,
     })
 
     const peer2 = Holster({
       file: "test/integration/concurrent2",
-      peers: [`ws://localhost:${relayPort}/gun`],
+      peers: [`ws://localhost:${relayPort}/holster`],
       port: 9913,
     })
 
@@ -154,7 +154,7 @@ describe("Integration - Real relay sync", () => {
   test("late-joining peer syncs existing data", async () => {
     const peer1 = Holster({
       file: "test/integration/early", port: 9914,
-      peers: [`ws://localhost:${relayPort}/gun`],
+      peers: [`ws://localhost:${relayPort}/holster`],
     })
 
     // Peer1 writes data first
@@ -167,7 +167,7 @@ describe("Integration - Real relay sync", () => {
     // Peer2 joins late
     const peer2 = Holster({
       file: "test/integration/late", port: 9915,
-      peers: [`ws://localhost:${relayPort}/gun`],
+      peers: [`ws://localhost:${relayPort}/holster`],
     })
 
     await new Promise(resolve => setTimeout(resolve, 300))
@@ -186,7 +186,7 @@ describe("Integration - Real relay sync", () => {
     // Create peer, write data
     const peer1 = Holster({
       file: storageFile, port: 9916,
-      peers: [`ws://localhost:${relayPort}/gun`],
+      peers: [`ws://localhost:${relayPort}/holster`],
     })
 
     await new Promise<void>(resolve => {
@@ -198,7 +198,7 @@ describe("Integration - Real relay sync", () => {
     // Create new peer with same storage - should load from disk
     const peer2 = Holster({
       file: storageFile, port: 9917,
-      peers: [`ws://localhost:${relayPort}/gun`],
+      peers: [`ws://localhost:${relayPort}/holster`],
     })
 
     await new Promise(resolve => setTimeout(resolve, 100))
@@ -213,12 +213,12 @@ describe("Integration - Real relay sync", () => {
   test("syncs nested graph structures", async () => {
     const peer1 = Holster({
       file: "test/integration/nested1", port: 9918,
-      peers: [`ws://localhost:${relayPort}/gun`],
+      peers: [`ws://localhost:${relayPort}/holster`],
     })
 
     const peer2 = Holster({
       file: "test/integration/nested2", port: 9919,
-      peers: [`ws://localhost:${relayPort}/gun`],
+      peers: [`ws://localhost:${relayPort}/holster`],
     })
 
     // Create nested structure with references
@@ -247,7 +247,7 @@ describe("Integration - Real relay sync", () => {
   test("handles connection drops and reconnection", async () => {
     const peer = Holster({
       file: "test/integration/reconnect", port: 9920,
-      peers: [`ws://localhost:${relayPort}/gun`],
+      peers: [`ws://localhost:${relayPort}/holster`],
     })
 
     // Write initial data
@@ -267,9 +267,9 @@ describe("Integration - Real relay sync", () => {
 
   test("multiple peers sync complex updates", async () => {
     const peers = [
-      Holster({ port: 9921, file: "test/integration/multi1", peers: [`ws://localhost:${relayPort}/gun`] }),
-      Holster({ port: 9922, file: "test/integration/multi2", peers: [`ws://localhost:${relayPort}/gun`] }),
-      Holster({ port: 9923, file: "test/integration/multi3", peers: [`ws://localhost:${relayPort}/gun`] }),
+      Holster({ port: 9921, file: "test/integration/multi1", peers: [`ws://localhost:${relayPort}/holster`] }),
+      Holster({ port: 9922, file: "test/integration/multi2", peers: [`ws://localhost:${relayPort}/holster`] }),
+      Holster({ port: 9923, file: "test/integration/multi3", peers: [`ws://localhost:${relayPort}/holster`] }),
     ]
 
     // Each peer writes different fields
@@ -298,7 +298,7 @@ describe("Integration - Real relay sync", () => {
 })
 
 describe("Integration - User auth over relay", () => {
-  let relay: Server
+  let relay: Server<WebSocket>
   const relayPort = 9901
 
   beforeAll(async () => {
@@ -313,12 +313,12 @@ describe("Integration - User auth over relay", () => {
   test("creates user and syncs to other peer", async () => {
     const peer1 = Holster({
       file: "test/integration/auth1", port: 9924,
-      peers: [`ws://localhost:${relayPort}/gun`],
+      peers: [`ws://localhost:${relayPort}/holster`],
     })
 
     const peer2 = Holster({
       file: "test/integration/auth2", port: 9925,
-      peers: [`ws://localhost:${relayPort}/gun`],
+      peers: [`ws://localhost:${relayPort}/holster`],
     })
 
     // Create user on peer1
@@ -346,12 +346,12 @@ describe("Integration - User auth over relay", () => {
   test("syncs user data between authenticated peers", async () => {
     const peer1 = Holster({
       file: "test/integration/userdata1", port: 9926,
-      peers: [`ws://localhost:${relayPort}/gun`],
+      peers: [`ws://localhost:${relayPort}/holster`],
     })
 
     const peer2 = Holster({
       file: "test/integration/userdata2", port: 9927,
-      peers: [`ws://localhost:${relayPort}/gun`],
+      peers: [`ws://localhost:${relayPort}/holster`],
     })
 
     // Create and auth user on peer1

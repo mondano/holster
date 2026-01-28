@@ -477,6 +477,9 @@ const Wire = (opt: HolsterOptions): WireAPI => {
     }
   }
 
+  // Setup server if in Node.js environment
+  let serverSend: ((data: string, isBinary?: boolean) => void) | null = null
+
   if (isNode) {
     let wss = options.wss
     let clients = (): WebSocket[] =>
@@ -489,7 +492,7 @@ const Wire = (opt: HolsterOptions): WireAPI => {
       clients = () => Array.from((wss as { clients: Set<WebSocket> }).clients || [])
     }
 
-    const send = (data: string, isBinary?: boolean): void => {
+    serverSend = (data: string, isBinary?: boolean): void => {
       const msg = JSON.parse(data) as WireMessage
       const trackId = msg["#"]
       if (trackId && pendingTimeouts.has(trackId)) {
@@ -605,9 +608,9 @@ const Wire = (opt: HolsterOptions): WireAPI => {
             const processMessage = async (): Promise<void> => {
               dup.track(msg["#"]!)
 
-              if (msg.get) get(msg as never, send)
-              if (msg.put) await put(msg as never, send)
-              send(data.toString(), isBinary)
+              if (msg.get) get(msg as never, serverSend!)
+              if (msg.put) await put(msg as never, serverSend!)
+              serverSend!(data.toString(), isBinary)
 
               const id = msg["@"]
               const cb = queue[id!]
@@ -627,10 +630,14 @@ const Wire = (opt: HolsterOptions): WireAPI => {
           }) as (...args: unknown[]) => void)
         }
       )
-    return api(send)
+
+    // If no peers specified, return server-only API
+    if (!(options.peers instanceof Array) || options.peers.length === 0) {
+      return api(serverSend)
+    }
   }
 
-  // Browser logic
+  // Client logic (browser or Node.js with peers)
   const peers: WebSocket[] = []
   let clientThrottled = false
   let throttleUntil = 0
@@ -718,6 +725,11 @@ const Wire = (opt: HolsterOptions): WireAPI => {
   }
 
   const send = (data: string): { err?: string } | void => {
+    // If we have a server, also send to server clients
+    if (serverSend) {
+      serverSend(data)
+    }
+
     if (messageQueue.length >= maxQueueLength) {
       return {
         err: `Message queue exceeded maximum length (${maxQueueLength}). Update query logic to request less data.`,
@@ -776,23 +788,36 @@ const Wire = (opt: HolsterOptions): WireAPI => {
         dup.track(msg["#"]!)
         if (msg.get) get(msg as never, send as never)
         if (msg.put) {
+          // First pass: extract references from souls we already care about
+          for (const [soul, node] of Object.entries(msg.put)) {
+            const hasExistingSoul = await hasSoul(soul)
+            const hasPendingRef = pendingReferences.has(soul)
+            const hasListener = !!listen[soul]
+
+            if ((hasExistingSoul || hasPendingRef || hasListener) && node && typeof node === "object") {
+              for (const [_key, value] of Object.entries(node)) {
+                const soulId = utils.rel.is(value as GraphValue)
+                if (soulId) {
+                  pendingReferences.add(soulId)
+                }
+              }
+            }
+          }
+
+          // Second pass: filter based on updated criteria
           const filteredPut: Graph = {}
           for (const [soul, node] of Object.entries(msg.put)) {
             let shouldStore = false
             if (await hasSoul(soul)) {
               shouldStore = true
-              if (node && typeof node === "object") {
-                for (const [_key, value] of Object.entries(node)) {
-                  const soulId = utils.rel.is(value as GraphValue)
-                  if (soulId) {
-                    pendingReferences.add(soulId)
-                  }
-                }
-              }
             }
             if (pendingReferences.has(soul)) {
               shouldStore = true
               pendingReferences.delete(soul)
+            }
+            // Also accept data if we have listeners registered for this soul
+            if (listen[soul]) {
+              shouldStore = true
             }
             if (shouldStore) {
               filteredPut[soul] = node
