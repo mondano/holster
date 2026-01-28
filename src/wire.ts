@@ -348,8 +348,9 @@ const Wire = (opt: HolsterOptions): WireAPI => {
     const opts = _opt || {}
     const ack = Get(lex, graph, opts.fast)
     const track = utils.text.random(9)
+    const dupTrack = dup.track(track)
     const request = JSON.stringify({
-      "#": dup.track(track),
+      "#": dupTrack,
       get: lex,
     })
 
@@ -378,9 +379,9 @@ const Wire = (opt: HolsterOptions): WireAPI => {
 
         if (err) console.log(err)
 
-        queue[track] = cb
+        queue[dupTrack] = cb
 
-        pendingTimeouts.set(track, {
+        pendingTimeouts.set(dupTrack, {
           lex: lex,
           wait: opts.wait || 100,
         })
@@ -388,8 +389,8 @@ const Wire = (opt: HolsterOptions): WireAPI => {
         const sendResult = send(request)
         if (sendResult && sendResult.err) {
           cb({ err: sendResult.err })
-          delete queue[track]
-          pendingTimeouts.delete(track)
+          delete queue[dupTrack]
+          pendingTimeouts.delete(dupTrack)
           return
         }
       },
