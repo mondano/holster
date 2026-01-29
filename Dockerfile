@@ -1,20 +1,20 @@
-# Use official Node.js runtime as base image
-FROM node:20-alpine
+# Use official Bun image
+FROM oven/bun:1.0-alpine
 
-# Set working directory in container
+# Set working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json (if available)
-COPY package*.json ./
+# Copy dependency manifests
+COPY bun.lockb package.json ./
 
 # Install dependencies
-RUN npm install
+RUN bun install --frozen-lockfile
 
-# Copy the rest of the application code
+# Copy the rest of the app
 COPY . .
 
-# Expose the HTTP port and WebSocket port
+# Expose ports
 EXPOSE 3000 8765
 
-# Run the server
-CMD ["node", "src/index.js"]
+# Run the app
+CMD ["bun", "run", "start"]

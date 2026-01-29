@@ -5,6 +5,7 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
+    "start": "bun src/index.ts",
     "test": "bun test",
     "test:ts": "bun test test/**/*.test.ts",
     "test:ts:system": "bun test test/system/**/*.test.ts",
